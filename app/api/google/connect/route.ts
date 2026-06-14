@@ -10,5 +10,5 @@ export async function GET(request: NextRequest) {
     return new NextResponse("driveAccountId is required", { status: 400 });
   }
 
-  return NextResponse.redirect(getAuthUrl(driveAccountId));
+  return NextResponse.redirect(getAuthUrl(driveAccountId, request.nextUrl.origin));
 }

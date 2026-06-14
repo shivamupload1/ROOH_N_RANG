@@ -9,6 +9,6 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Google OAuth callback is missing code/state.", { status: 400 });
   }
 
-  await handleOAuthCallback(code, state);
+  await handleOAuthCallback(code, state, request.nextUrl.origin);
   return NextResponse.redirect(new URL("/admin/drive-accounts", request.url));
 }

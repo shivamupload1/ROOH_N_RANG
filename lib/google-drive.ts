@@ -18,10 +18,20 @@ function appUrl() {
   return process.env.APP_URL || "http://localhost:3000";
 }
 
-function oauthConfig() {
+function callbackUrl(origin?: string) {
+  const baseUrl = origin || process.env.GOOGLE_REDIRECT_URI || `${appUrl()}/api/google/callback`;
+
+  if (baseUrl.endsWith("/api/google/callback")) {
+    return baseUrl;
+  }
+
+  return `${baseUrl.replace(/\/$/, "")}/api/google/callback`;
+}
+
+function oauthConfig(origin?: string) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${appUrl()}/api/google/callback`;
+  const redirectUri = callbackUrl(origin);
 
   if (!clientId || !clientSecret) {
     throw new Error("GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required.");
@@ -73,13 +83,13 @@ function decodeState(value: string): OAuthState {
   return state;
 }
 
-export function createOAuthClient() {
-  const { clientId, clientSecret, redirectUri } = oauthConfig();
+export function createOAuthClient(origin?: string) {
+  const { clientId, clientSecret, redirectUri } = oauthConfig(origin);
   return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 }
 
-export function getAuthUrl(driveAccountId: string) {
-  const oauth2Client = createOAuthClient();
+export function getAuthUrl(driveAccountId: string, origin?: string) {
+  const oauth2Client = createOAuthClient(origin);
 
   return oauth2Client.generateAuthUrl({
     access_type: "offline",
@@ -89,9 +99,9 @@ export function getAuthUrl(driveAccountId: string) {
   });
 }
 
-export async function handleOAuthCallback(code: string, stateValue: string) {
+export async function handleOAuthCallback(code: string, stateValue: string, origin?: string) {
   const state = decodeState(stateValue);
-  const oauth2Client = createOAuthClient();
+  const oauth2Client = createOAuthClient(origin);
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
 
