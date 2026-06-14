@@ -4,25 +4,41 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@roohandrangstories.in";
+  const adminEmail = (process.env.ADMIN_EMAIL || "admin@roohandrangstories.in").toLowerCase();
   const adminPassword = process.env.ADMIN_PASSWORD || "ChangeMeSoon!";
   const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
   const galleryPinHash = await bcrypt.hash("1234", 12);
 
-  await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: {
-      name: "ROOH & RANG Admin",
-      passwordHash: adminPasswordHash,
-      role: UserRole.ADMIN
+  const existingAdmin = await prisma.user.findFirst({
+    where: {
+      email: {
+        equals: adminEmail,
+        mode: "insensitive"
+      }
     },
-    create: {
-      name: "ROOH & RANG Admin",
-      email: adminEmail,
-      passwordHash: adminPasswordHash,
-      role: UserRole.ADMIN
-    }
+    select: { id: true }
   });
+
+  if (existingAdmin) {
+    await prisma.user.update({
+      where: { id: existingAdmin.id },
+      data: {
+        name: "ROOH & RANG Admin",
+        email: adminEmail,
+        passwordHash: adminPasswordHash,
+        role: UserRole.ADMIN
+      }
+    });
+  } else {
+    await prisma.user.create({
+      data: {
+        name: "ROOH & RANG Admin",
+        email: adminEmail,
+        passwordHash: adminPasswordHash,
+        role: UserRole.ADMIN
+      }
+    });
+  }
 
   await prisma.websiteContent.upsert({
     where: { key: "brand" },

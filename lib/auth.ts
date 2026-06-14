@@ -153,8 +153,13 @@ export async function verifyAdminCredentials(email: string, password: string) {
 
   if (process.env.DATABASE_URL) {
     try {
-      const admin = await prisma.user.findUnique({
-        where: { email: normalizedEmail }
+      const admin = await prisma.user.findFirst({
+        where: {
+          email: {
+            equals: normalizedEmail,
+            mode: "insensitive"
+          }
+        }
       });
 
       if (admin?.role === "ADMIN" && admin.passwordHash) {
