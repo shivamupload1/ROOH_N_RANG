@@ -115,36 +115,58 @@ export async function handleOAuthCallback(code: string, stateValue: string) {
 async function authorizedClient(driveAccountId: string) {
   const account = await prisma.driveAccount.findUnique({ where: { id: driveAccountId } });
 
+  if (!account) {
+    throw new Error("Drive account not found.");
+  }
+
   if (!account?.encryptedRefreshToken) {
+    await prisma.driveAccount.update({
+      where: { id: driveAccountId },
+      data: { status: DriveAccountStatus.REVOKED }
+    });
     throw new Error("Drive account is not connected.");
   }
 
   const oauth2Client = createOAuthClient();
+  const currentAccessToken = account.encryptedAccessToken ? decrypt(account.encryptedAccessToken) : undefined;
+
   oauth2Client.setCredentials({
-    access_token: account.encryptedAccessToken ? decrypt(account.encryptedAccessToken) : undefined,
+    access_token: currentAccessToken,
     refresh_token: decrypt(account.encryptedRefreshToken),
     expiry_date: account.tokenExpiry?.getTime()
   });
 
-  const token = await oauth2Client.getAccessToken();
+  try {
+    const token = await oauth2Client.getAccessToken();
 
-  if (token.token && token.token !== (account.encryptedAccessToken ? decrypt(account.encryptedAccessToken) : undefined)) {
+    if (token.token && token.token !== currentAccessToken) {
+      await prisma.driveAccount.update({
+        where: { id: driveAccountId },
+        data: {
+          encryptedAccessToken: encrypt(token.token),
+          status: DriveAccountStatus.CONNECTED
+        }
+      });
+    }
+  } catch {
     await prisma.driveAccount.update({
       where: { id: driveAccountId },
       data: {
-        encryptedAccessToken: encrypt(token.token),
-        status: DriveAccountStatus.CONNECTED
+        status: account.tokenExpiry && account.tokenExpiry.getTime() < Date.now() ? DriveAccountStatus.EXPIRED : DriveAccountStatus.REVOKED
       }
     });
+
+    throw new Error("Google Drive connection expired or was revoked. Reconnect the account and try again.");
   }
 
-  return oauth2Client;
+  return { account, oauth2Client };
 }
 
 export async function createFolder(driveAccountId: string, name: string, parentFolderId?: string | null) {
-  const auth = await authorizedClient(driveAccountId);
-  const drive = google.drive({ version: "v3", auth });
+  const { oauth2Client } = await authorizedClient(driveAccountId);
+  const drive = google.drive({ version: "v3", auth: oauth2Client });
   const response = await drive.files.create({
+    supportsAllDrives: true,
     requestBody: {
       name,
       mimeType: "application/vnd.google-apps.folder",
@@ -157,11 +179,16 @@ export async function createFolder(driveAccountId: string, name: string, parentF
 }
 
 export async function listFiles(driveAccountId: string, folderId: string) {
-  const auth = await authorizedClient(driveAccountId);
-  const drive = google.drive({ version: "v3", auth });
+  const { account, oauth2Client } = await authorizedClient(driveAccountId);
+  const drive = google.drive({ version: "v3", auth: oauth2Client });
   const response = await drive.files.list({
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+    corpora: account.sharedDriveId ? "drive" : "default",
+    driveId: account.sharedDriveId || undefined,
     q: `'${folderId}' in parents and trashed = false`,
     pageSize: 100,
+    orderBy: "folder,name_natural",
     fields: "files(id,name,mimeType,size,thumbnailLink,webViewLink,webContentLink,imageMediaMetadata,videoMediaMetadata)"
   });
 
@@ -169,10 +196,11 @@ export async function listFiles(driveAccountId: string, folderId: string) {
 }
 
 export async function getFileMetadata(driveAccountId: string, fileId: string) {
-  const auth = await authorizedClient(driveAccountId);
-  const drive = google.drive({ version: "v3", auth });
+  const { oauth2Client } = await authorizedClient(driveAccountId);
+  const drive = google.drive({ version: "v3", auth: oauth2Client });
   const response = await drive.files.get({
     fileId,
+    supportsAllDrives: true,
     fields: "id,name,mimeType,size,thumbnailLink,webViewLink,webContentLink,imageMediaMetadata,videoMediaMetadata"
   });
 

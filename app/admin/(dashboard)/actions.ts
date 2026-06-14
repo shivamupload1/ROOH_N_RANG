@@ -115,12 +115,35 @@ export async function createDriveAccountAction(formData: FormData) {
       clientId: textOrNull(parsed.clientId),
       label: parsed.label,
       googleEmail: textOrNull(parsed.googleEmail),
-      accountType: parsed.accountType
+      accountType: parsed.accountType,
+      rootFolderId: textOrNull(parsed.rootFolderId),
+      sharedDriveId: textOrNull(parsed.sharedDriveId)
     }
   });
 
   revalidatePath("/admin/drive-accounts");
   redirect("/admin/drive-accounts");
+}
+
+export async function updateDriveAccountAction(id: string, formData: FormData) {
+  await requireAdminSession();
+  const parsed = driveAccountSchema.parse(Object.fromEntries(formData));
+
+  await prisma.driveAccount.update({
+    where: { id },
+    data: {
+      clientId: textOrNull(parsed.clientId),
+      label: parsed.label,
+      googleEmail: textOrNull(parsed.googleEmail),
+      accountType: parsed.accountType,
+      rootFolderId: textOrNull(parsed.rootFolderId),
+      sharedDriveId: textOrNull(parsed.sharedDriveId)
+    }
+  });
+
+  revalidatePath("/admin/drive-accounts");
+  revalidatePath(`/admin/drive-accounts/${id}`);
+  redirect(`/admin/drive-accounts/${id}`);
 }
 
 export async function deleteDriveAccountAction(id: string) {

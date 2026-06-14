@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Download, Heart, LockKeyhole, Play, Send } from "lucide-react";
-import { verifyGalleryPinAction, toggleFavoriteAction } from "@/app/gallery/[eventSlug]/actions";
+import { submitSelectionAction, toggleFavoriteAction, verifyGalleryPinAction } from "@/app/gallery/[eventSlug]/actions";
 import { FormField } from "@/components/admin/form-field";
 import { getGallerySession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { parseSelectionSubmission, selectionSubmissionKey } from "@/lib/selection-submissions";
 import { getSiteBrand } from "@/lib/site-content";
 
 export const dynamic = "force-dynamic";
@@ -17,10 +18,10 @@ export default async function GalleryPage({
   searchParams
 }: {
   params: Promise<{ eventSlug: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; selection?: string }>;
 }) {
   const { eventSlug } = await params;
-  const { error } = await searchParams;
+  const { error, selection } = await searchParams;
   const brand = await getSiteBrand();
   const event = await prisma.event.findUnique({
     where: { slug: eventSlug },
@@ -89,6 +90,14 @@ export default async function GalleryPage({
     select: { mediaFileId: true }
   });
   const favoriteIds = new Set(favorites.map((favorite) => favorite.mediaFileId));
+  const savedSelection = parseSelectionSubmission(
+    (
+      await prisma.settings.findUnique({
+        where: { key: selectionSubmissionKey(event.id, session.visitorId) },
+        select: { value: true }
+      })
+    )?.value
+  );
 
   return (
     <main className="min-h-screen bg-ivory text-ink">
@@ -180,11 +189,30 @@ export default async function GalleryPage({
 
         <div className="rounded-lg border border-marigold/30 bg-white p-6">
           <h2 className="text-xl font-semibold">Album selection</h2>
-          <p className="mt-2 text-sm text-ink/60">Favorites are saved automatically for this visitor session.</p>
-          <button type="button" className="mt-4 inline-flex items-center gap-2 rounded-md bg-rust px-5 py-3 text-sm font-semibold text-white">
-            <Send size={17} />
-            Submit Selection
-          </button>
+          <p className="mt-2 text-sm text-ink/60">
+            Favorites are saved automatically for this visitor session. Submit once when your shortlist is final so the studio can review it.
+          </p>
+          {selection === "submitted" ? (
+            <p className="mt-4 rounded-md bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+              Selection submitted successfully. The studio can now review your favorites.
+            </p>
+          ) : null}
+          {selection === "empty" ? (
+            <p className="mt-4 rounded-md bg-rust/10 px-4 py-3 text-sm font-medium text-rust">
+              Please save at least one favorite before submitting your selection.
+            </p>
+          ) : null}
+          {savedSelection ? (
+            <p className="mt-4 text-sm text-ink/60">
+              Last submitted: {new Date(savedSelection.submittedAt).toLocaleString("en-IN")} with {savedSelection.favoriteCount} favorites.
+            </p>
+          ) : null}
+          <form action={submitSelectionAction.bind(null, event.slug)}>
+            <button type="submit" className="mt-4 inline-flex items-center gap-2 rounded-md bg-rust px-5 py-3 text-sm font-semibold text-white">
+              <Send size={17} />
+              {savedSelection ? "Resubmit Selection" : "Submit Selection"}
+            </button>
+          </form>
         </div>
       </section>
     </main>

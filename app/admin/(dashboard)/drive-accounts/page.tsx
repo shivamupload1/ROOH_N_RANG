@@ -1,15 +1,8 @@
 import Link from "next/link";
-import { Link as LinkIcon, Plus, Trash2 } from "lucide-react";
+import { Link as LinkIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import { createDriveAccountAction, deleteDriveAccountAction } from "@/app/admin/(dashboard)/actions";
-import { SelectField } from "@/components/admin/form-controls";
-import { FormField } from "@/components/admin/form-field";
+import { DriveAccountFormFields } from "@/components/admin/drive-account-form-fields";
 import { prisma } from "@/lib/db";
-
-const accountTypeOptions = [
-  { label: "Client Personal", value: "CLIENT_PERSONAL" },
-  { label: "Studio Workspace", value: "STUDIO_WORKSPACE" },
-  { label: "Shared Drive", value: "SHARED_DRIVE" }
-];
 
 export default async function AdminDriveAccountsPage() {
   const [driveAccounts, clients] = await Promise.all([
@@ -25,11 +18,6 @@ export default async function AdminDriveAccountsPage() {
     prisma.client.findMany({ orderBy: { name: "asc" } })
   ]);
 
-  const clientOptions = [
-    { label: "No specific client", value: "" },
-    ...clients.map((client) => ({ label: client.name, value: client.id }))
-  ];
-
   return (
     <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
       <section>
@@ -40,12 +28,11 @@ export default async function AdminDriveAccountsPage() {
         </p>
 
         <form action={createDriveAccountAction} className="mt-6 grid gap-4 rounded-lg border border-ink/10 bg-white p-6">
-          <FormField label="Label" name="label" placeholder="Rahul & Priya Drive" required />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField label="Google email" name="googleEmail" type="email" placeholder="client@gmail.com" />
-            <SelectField label="Account type" name="accountType" options={accountTypeOptions} defaultValue="CLIENT_PERSONAL" />
-          </div>
-          <SelectField label="Client" name="clientId" options={clientOptions} />
+          <DriveAccountFormFields clients={clients} />
+          <p className="rounded-md bg-ivory px-3 py-2 text-xs leading-5 text-ink/55">
+            Root folder ID is the parent folder where this studio should create event folders. Shared drive ID is only needed when
+            the account works inside a shared drive.
+          </p>
           <button type="submit" className="inline-flex w-fit items-center gap-2 rounded-md bg-ink px-5 py-3 text-sm font-semibold text-ivory transition hover:bg-rust">
             <Plus size={17} />
             Add Drive Account
@@ -70,6 +57,10 @@ export default async function AdminDriveAccountsPage() {
                   <p className="font-semibold text-ink">{account.label}</p>
                   <p className="text-xs text-ink/55">{account.googleEmail || "Email will fill after OAuth"}</p>
                   <p className="text-xs text-ink/45">{account.client?.name || "Studio / unassigned"}</p>
+                  <p className="text-xs text-ink/45">
+                    {account.rootFolderId ? "Root folder ready" : "Root folder not set"}
+                    {account.sharedDriveId ? " / Shared drive" : ""}
+                  </p>
                 </td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-ivory px-3 py-1 text-xs font-semibold text-rust">{account.status}</span>
@@ -85,6 +76,13 @@ export default async function AdminDriveAccountsPage() {
                       title="Connect Google Drive"
                     >
                       <LinkIcon size={16} />
+                    </Link>
+                    <Link
+                      href={`/admin/drive-accounts/${account.id}`}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-ink/10 text-ink transition hover:border-rust hover:text-rust"
+                      title="Edit Drive account"
+                    >
+                      <Pencil size={16} />
                     </Link>
                     <form action={deleteDriveAccountAction.bind(null, account.id)}>
                       <button

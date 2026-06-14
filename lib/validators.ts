@@ -31,7 +31,9 @@ export const driveAccountSchema = z.object({
   clientId: optionalText,
   label: z.string().trim().min(2, "Enter an account label."),
   googleEmail: z.string().trim().email("Enter a valid Google email.").optional().or(z.literal("")),
-  accountType: z.enum(["CLIENT_PERSONAL", "STUDIO_WORKSPACE", "SHARED_DRIVE"])
+  accountType: z.enum(["CLIENT_PERSONAL", "STUDIO_WORKSPACE", "SHARED_DRIVE"]),
+  rootFolderId: optionalText,
+  sharedDriveId: optionalText
 });
 
 export const eventSchema = z.object({
