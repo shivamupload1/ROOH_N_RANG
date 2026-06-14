@@ -4,7 +4,20 @@ import { createDriveAccountAction, deleteDriveAccountAction } from "@/app/admin/
 import { DriveAccountFormFields } from "@/components/admin/drive-account-form-fields";
 import { prisma } from "@/lib/db";
 
-export default async function AdminDriveAccountsPage() {
+function decodeMessage(value?: string) {
+  if (!value) {
+    return "";
+  }
+
+  return value.replace(/\+/g, " ");
+}
+
+export default async function AdminDriveAccountsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ googleStatus?: string; googleMessage?: string }>;
+}) {
+  const { googleStatus, googleMessage } = await searchParams;
   const [driveAccounts, clients] = await Promise.all([
     prisma.driveAccount.findMany({
       include: {
@@ -26,6 +39,16 @@ export default async function AdminDriveAccountsPage() {
         <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">
           Add one Google Drive identity per client or event. Use OAuth connect; never store Google passwords.
         </p>
+        {googleStatus === "connected" ? (
+          <p className="mt-4 rounded-md bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+            Google Drive connected successfully.
+          </p>
+        ) : null}
+        {googleStatus === "error" ? (
+          <p className="mt-4 rounded-md bg-rust/10 px-4 py-3 text-sm font-medium text-rust">
+            Google Drive connect failed. {decodeMessage(googleMessage) || "Check Vercel Google credentials and token encryption key."}
+          </p>
+        ) : null}
 
         <form action={createDriveAccountAction} className="mt-6 grid gap-4 rounded-lg border border-ink/10 bg-white p-6">
           <DriveAccountFormFields clients={clients} />

@@ -14,12 +14,20 @@ type OAuthState = {
   ts: number;
 };
 
+function normalizeEnvValue(value?: string) {
+  if (!value) {
+    return "";
+  }
+
+  return value.trim().replace(/^['"]|['"]$/g, "");
+}
+
 function appUrl() {
-  return process.env.APP_URL || "http://localhost:3000";
+  return normalizeEnvValue(process.env.APP_URL) || "http://localhost:3000";
 }
 
 function callbackUrl(origin?: string) {
-  const baseUrl = origin || process.env.GOOGLE_REDIRECT_URI || `${appUrl()}/api/google/callback`;
+  const baseUrl = origin || normalizeEnvValue(process.env.GOOGLE_REDIRECT_URI) || `${appUrl()}/api/google/callback`;
 
   if (baseUrl.endsWith("/api/google/callback")) {
     return baseUrl;
@@ -29,8 +37,8 @@ function callbackUrl(origin?: string) {
 }
 
 function oauthConfig(origin?: string) {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const clientId = normalizeEnvValue(process.env.GOOGLE_CLIENT_ID);
+  const clientSecret = normalizeEnvValue(process.env.GOOGLE_CLIENT_SECRET);
   const redirectUri = callbackUrl(origin);
 
   if (!clientId || !clientSecret) {

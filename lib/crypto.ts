@@ -2,8 +2,16 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 const ALGORITHM = "aes-256-gcm";
 
+function normalizeEnvValue(value?: string) {
+  if (!value) {
+    return "";
+  }
+
+  return value.trim().replace(/^['"]|['"]$/g, "");
+}
+
 function encryptionKey() {
-  const raw = process.env.TOKEN_ENCRYPTION_KEY;
+  const raw = normalizeEnvValue(process.env.TOKEN_ENCRYPTION_KEY);
 
   if (!raw) {
     throw new Error("TOKEN_ENCRYPTION_KEY is required for Google token encryption.");
