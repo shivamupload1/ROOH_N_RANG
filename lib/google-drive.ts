@@ -242,7 +242,7 @@ export async function listFiles(driveAccountId: string, folderId: string) {
     const response = await drive.files.list({
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
-      corpora: account.sharedDriveId ? "drive" : "default",
+      corpora: account.sharedDriveId ? "drive" : "allDrives",
       driveId: account.sharedDriveId || undefined,
       q: `'${folderId}' in parents and trashed = false`,
       pageSize: 100,
