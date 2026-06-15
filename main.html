@@ -7,10 +7,10 @@
   <meta name="description" content="Rooh N Rang wedding photography and cinematic films.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="main-site">
+<body class="main-site story-page">
   <div class="menu-overlay" data-menu-close></div>
   <aside class="side-menu" aria-label="Site navigation">
     <div class="side-menu__top">
@@ -20,11 +20,11 @@
       </button>
     </div>
     <nav class="side-menu__links">
-      <a href="#stories" data-menu-close>The Gallery</a>
-      <a href="#films" data-menu-close>Film Stories</a>
-      <a href="#journal" data-menu-close>The Journal</a>
-      <a href="#process" data-menu-close>Our Process</a>
-      <a href="#contact" data-menu-close>Contact Us</a>
+      <a href="#captured" data-menu-close>Captured Moments</a>
+      <a href="#spotlight" data-menu-close>Spotlight Collection</a>
+      <a href="#films" data-menu-close>Soul + Cinema</a>
+      <a href="client-gallery.html" data-menu-close>Collection</a>
+      <a href="#contact" data-menu-close>Contact</a>
     </nav>
     <div class="side-menu__footer">
       <span>Follow our journey</span>
@@ -36,123 +36,99 @@
     </div>
   </aside>
 
-  <header class="site-header" id="site-header">
-    <button class="menu-button" type="button" data-menu-open aria-label="Open menu">
+  <header class="story-header" id="site-header">
+    <button class="story-menu" type="button" data-menu-open aria-label="Open menu">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
-    <a class="brand-mark" href="index.html" aria-label="Rooh N Rang home">
-      <span>Rooh</span><small>N</small><span>Rang</span>
-    </a>
-    <nav class="header-links" aria-label="Primary navigation">
-      <a href="#stories">Stories</a>
-      <a href="#films">Films</a>
-      <a href="client-gallery.html">Client Gallery</a>
-      <a href="#contact">Contact</a>
+    <a class="story-logo" href="index.html" aria-label="Rooh N Rang welcome">ROOH <span>n</span> RANG</a>
+    <nav class="story-actions" aria-label="Quick links">
+      <a href="https://instagram.com" aria-label="Instagram">@</a>
+      <a href="https://facebook.com" aria-label="Facebook">f</a>
+      <a href="client-gallery.html">Collection</a>
+      <a href="client-gallery.html">Login</a>
     </nav>
   </header>
 
-  <main>
-<section class="editorial-hero" id="stories">
-      <div class="editorial-copy">
-        <p class="eyebrow">Visual Stories</p>
-        <h2>Images with a pulse, films with memory.</h2>
-        <p>From the quiet pause before the ceremony to the celebration after midnight, the experience is designed around real people and the atmosphere around them.</p>
-        <div class="hero-actions">
-          <a class="primary-link" href="#portfolio">Explore Work</a>
-          <a class="secondary-link" href="client-gallery.html">Open Client Gallery</a>
-        </div>
+  <main class="story-main">
+    <section class="story-hero" aria-label="Featured visual story">
+      <img class="story-hero__image" id="main-hero-image" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1900&auto=format&fit=crop" alt="Wedding bouquet cinematic frame">
+      <div class="story-hero__dots" id="main-hero-dots" aria-hidden="true"></div>
+    </section>
+
+    <section class="story-philosophy" id="stories">
+      <figure class="story-polaroid story-polaroid--left">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&q=80&auto=format&fit=crop" alt="Laughing portrait">
+      </figure>
+      <div class="story-philosophy__copy">
+        <h1>A Modern Approach <em>to an</em> Age Old Tradition</h1>
+        <p>Considered to be the epitome of modern wedding imagery, Rooh n Rang brings editorial calm, intimate emotion, and cinematic rhythm into every celebration.</p>
+        <p>Awarded for thoughtful storytelling, we create visual art that feels personal, timeless, and etched in memory.</p>
       </div>
-      <div class="feature-frame">
-        <img id="feature-image" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop" alt="Cinematic wedding moment">
-        <div class="slide-controls" aria-label="Hero slideshow controls">
-          <button class="icon-button light" type="button" data-slide="prev" aria-label="Previous image"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
-          <button class="icon-button light" type="button" data-slide="next" aria-label="Next image"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
-        </div>
-        <div class="slide-dots" id="slide-dots" aria-hidden="true"></div>
+      <figure class="story-polaroid story-polaroid--right">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=900&auto=format&fit=crop" alt="Wedding ceremony detail">
+      </figure>
+    </section>
+
+    <section class="story-captured" id="captured">
+      <div class="story-section-title">
+        <span>Portfolio</span>
+        <h2>Captured Moments</h2>
+      </div>
+      <div class="story-mosaic">
+        <button class="story-tile tall" type="button" data-lightbox="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=700&q=80&auto=format&fit=crop" alt="Editorial profile"></button>
+        <button class="story-tile tall" type="button" data-lightbox="https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?w=700&q=80&auto=format&fit=crop" alt="Light portrait"></button>
+        <button class="story-tile" type="button" data-lightbox="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg"><img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" alt="Wedding bouquet"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=80&auto=format&fit=crop" alt="Ceremony decor"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=700&q=80&auto=format&fit=crop" alt="Wedding rings"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=700&q=80&auto=format&fit=crop" alt="Camera"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700&q=80&auto=format&fit=crop" alt="Landscape wedding"></button>
+        <button class="story-tile tall" type="button" data-lightbox="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=700&q=80&auto=format&fit=crop" alt="Black and white fashion portrait"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1472457897821-70d3819a0e24?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1472457897821-70d3819a0e24?w=700&q=80&auto=format&fit=crop" alt="Abstract color"></button>
+        <button class="story-tile tall" type="button" data-lightbox="https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=700&q=80&auto=format&fit=crop" alt="Wedding dress"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1509927083803-4bd519298ac4?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1509927083803-4bd519298ac4?w=700&q=80&auto=format&fit=crop" alt="Bride"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=700&q=80&auto=format&fit=crop" alt="Wedding toast"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=700&q=80&auto=format&fit=crop" alt="Ceremony"></button>
+        <button class="story-tile tall" type="button" data-lightbox="https://images.unsplash.com/photo-1508186225823-0963cf9ab0de?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1508186225823-0963cf9ab0de?w=700&q=80&auto=format&fit=crop" alt="Water abstract"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=700&q=80&auto=format&fit=crop" alt="Wedding couple"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=700&q=80&auto=format&fit=crop" alt="Wedding hands"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1510076857177-7470076d4098?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1510076857177-7470076d4098?w=700&q=80&auto=format&fit=crop" alt="Wedding table"></button>
+        <button class="story-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=700&q=80&auto=format&fit=crop" alt="Portrait"></button>
       </div>
     </section>
 
-    <section class="portfolio-band" id="portfolio">
-      <div class="section-heading">
-        <p class="eyebrow">The Gallery</p>
-        <h2>Weddings, portraits, rituals, and the spaces between.</h2>
+    <section class="story-spotlight" id="spotlight">
+      <div class="story-section-title compact">
+        <span>Featured Stories</span>
+        <h2>The Spotlight Collection</h2>
       </div>
-      <div class="masonry-grid">
-        <button class="photo-tile tall" type="button" data-lightbox="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg"><img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/917d6f93-fb36-439a-8c48-884b67b35381_1600w.jpg" alt="Wedding portrait"><span>Mumbai Wedding</span></button>
-        <button class="photo-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&q=80&auto=format&fit=crop" alt="Wedding detail"><span>Details</span></button>
-        <button class="photo-tile wide" type="button" data-lightbox="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg"><img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/4734259a-bad7-422f-981e-ce01e79184f2_1600w.jpg" alt="Celebration"><span>Celebration</span></button>
-        <button class="photo-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&q=80&auto=format&fit=crop" alt="Wedding rings"><span>Rituals</span></button>
-        <button class="photo-tile tall" type="button" data-lightbox="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg"><img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg" alt="Bride portrait"><span>Portraits</span></button>
-        <button class="photo-tile" type="button" data-lightbox="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1200&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80&auto=format&fit=crop" alt="Wedding toast"><span>After Hours</span></button>
-      </div>
-    </section>
-
-    <section class="film-section" id="films">
-      <div class="film-media">
-        <video id="story-video" src="assets/video.mp4" autoplay muted loop playsinline></video>
-        <div class="video-progress"><span id="video-progress-bar"></span></div>
-      </div>
-      <div class="film-copy">
-        <p class="eyebrow light">Film Stories</p>
-        <h2>Motion that feels close, not staged.</h2>
-        <p>The design direction keeps the moving image central: full bleed, quiet controls, and a strong editorial rhythm from page to page.</p>
+      <div class="story-strip">
+        <a href="client-gallery.html"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=80&auto=format&fit=crop" alt="Spotlight wedding story"></a>
+        <a href="client-gallery.html"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=900&q=80&auto=format&fit=crop" alt="Spotlight celebration"></a>
+        <a href="client-gallery.html"><img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=900&q=80&auto=format&fit=crop" alt="Wedding couple"></a>
+        <a href="client-gallery.html"><img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=900&q=80&auto=format&fit=crop" alt="Hands"></a>
+        <a href="client-gallery.html"><img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=900&q=80&auto=format&fit=crop" alt="Rings"></a>
       </div>
     </section>
 
-    <section class="process-section" id="process">
-      <div class="section-heading compact">
-        <p class="eyebrow">Our Process</p>
-        <h2>A calm structure for emotional days.</h2>
+    <section class="story-cinema" id="films">
+      <video id="heroVideo" src="assets/video.mp4" autoplay muted loop playsinline></video>
+      <div class="story-wave story-wave--top"></div>
+      <div class="story-wave story-wave--bottom"></div>
+      <div class="story-cinema__content">
+        <h2>Soul <span>+</span> Cinema</h2>
+        <p>Every wedding is unique and so are our films. Our visual language moves gently between atmosphere, emotion, and a cinematic sense of time.</p>
+        <div class="story-progress"><span id="heroProgress"></span></div>
       </div>
-      <div class="process-grid">
-        <article>
-          <span>01</span>
-          <h3>Listen</h3>
-          <p>We understand families, timings, events, and the mood that matters most.</p>
-        </article>
-        <article>
-          <span>02</span>
-          <h3>Frame</h3>
-          <p>We plan coverage without turning your celebration into a production line.</p>
-        </article>
-        <article>
-          <span>03</span>
-          <h3>Deliver</h3>
-          <p>The final archive feels considered, private, and easy to return to long after the event.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="journal-section" id="journal">
-      <div class="journal-image">
-        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1200&q=80&auto=format&fit=crop" alt="Wedding couple walking">
-      </div>
-      <div class="journal-copy">
-        <p class="eyebrow">The Journal</p>
-        <h2>Every gallery needs room to breathe.</h2>
-        <p>This fresh build keeps the old visual language: soft monochrome images, serif headlines, generous spacing, and an immersive first impression. The backend can now be designed around this direction instead of pulling the look in different directions later.</p>
-      </div>
-    </section>
-
-    <section class="client-teaser">
-      <div>
-        <p class="eyebrow">Private Gallery</p>
-        <h2>Client viewing experience is included in the design base.</h2>
-      </div>
-      <a class="primary-link" href="client-gallery.html">Preview Gallery</a>
     </section>
   </main>
 
-  <footer class="site-footer" id="contact">
-    <div>
-      <a class="brand-mark footer-brand" href="index.html"><span>Rooh</span><small>N</small><span>Rang</span></a>
-      <p>Visual stories for weddings, families, and everything worth remembering.</p>
+  <footer class="story-footer" id="contact">
+    <p>Reach us today</p>
+    <div class="story-footer__socials">
+      <a href="https://instagram.com">@</a>
+      <a href="https://facebook.com">f</a>
     </div>
-    <div class="footer-links">
-      <a href="mailto:hello@roohnrang.in">hello@roohnrang.in</a>
-      <a href="tel:+919999999999">+91 99999 99999</a>
-      <a href="client-gallery.html">Client Gallery</a>
-    </div>
+    <small>ROOH n RANG</small>
   </footer>
 
   <div class="lightbox" id="lightbox" hidden>
@@ -163,4 +139,3 @@
   <script src="js/main.js"></script>
 </body>
 </html>
-
