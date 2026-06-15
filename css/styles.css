@@ -1201,3 +1201,29 @@ h3 {
 .intro-hero {
   min-height: 92vh;
 }
+
+.welcome-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.welcome-page .intro-hero {
+  min-height: 100vh;
+  height: 100vh;
+}
+
+.main-site .site-header {
+  background: rgba(251, 248, 242, 0.9);
+  color: var(--ink);
+  border-color: rgba(27, 23, 20, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.main-site .site-header .menu-button:hover,
+.main-site .site-header .icon-button:hover {
+  background: rgba(27, 23, 20, 0.07);
+}
+
+.main-site .editorial-hero {
+  padding-top: 142px;
+}

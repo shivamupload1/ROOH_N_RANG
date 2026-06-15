@@ -4,7 +4,7 @@ const path = require("path");
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
 
-const entries = ["index.html", "client-gallery.html", "css", "js", "assets"];
+const entries = ["index.html", "main.html", "client-gallery.html", "css", "js", "assets"];
 
 function removeIfExists(target) {
   if (fs.existsSync(target)) {

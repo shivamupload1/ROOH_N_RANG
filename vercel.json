@@ -6,6 +6,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/main",
+      "destination": "/main.html"
+    },
+    {
       "source": "/client-gallery",
       "destination": "/client-gallery.html"
     }
