@@ -171,35 +171,35 @@ if (cinemaVideo && cinemaProgress) {
     cinemaProgress.style.width = `${percent}%`;
   });
 }
-// Captured Moments auto-flip animation
-const capturedFlipTiles = Array.from(document.querySelectorAll(".story-mosaic--final [data-flip-images]"));
-let capturedFlipPointer = 0;
+// Captured Moments smooth dissolve animation
+const capturedCycleTiles = Array.from(document.querySelectorAll(".story-mosaic--final [data-cycle-images]"));
+let capturedCyclePointer = 0;
 
 function highResCapturedUrl(url) {
   return url.replace(/([?&]w=)\d+/i, (_, prefix) => `${prefix}2400`);
 }
 
-function rotateCapturedTile() {
-  if (!capturedFlipTiles.length || document.hidden) return;
-  const tile = capturedFlipTiles[capturedFlipPointer % capturedFlipTiles.length];
-  capturedFlipPointer += 1;
+function cycleCapturedTile() {
+  if (!capturedCycleTiles.length || document.hidden) return;
+  const tile = capturedCycleTiles[capturedCyclePointer % capturedCycleTiles.length];
+  capturedCyclePointer += 1;
   const image = tile.querySelector("img");
-  const images = (tile.getAttribute("data-flip-images") || "").split("|").filter(Boolean);
+  const images = (tile.getAttribute("data-cycle-images") || "").split("|").filter(Boolean);
   if (!image || images.length < 2) return;
-  const nextIndex = (Number(tile.dataset.flipIndex || 0) + 1) % images.length;
-  tile.dataset.flipIndex = String(nextIndex);
+  const nextIndex = (Number(tile.dataset.cycleIndex || 0) + 1) % images.length;
+  tile.dataset.cycleIndex = String(nextIndex);
   const nextImage = images[nextIndex];
-  tile.classList.add("is-flipping");
+  tile.classList.add("is-fading");
   window.setTimeout(() => {
     image.src = nextImage;
     tile.setAttribute("data-lightbox", highResCapturedUrl(nextImage));
-    tile.classList.remove("is-flipping");
+    tile.classList.remove("is-fading");
     tile.classList.add("is-settling");
     window.setTimeout(() => tile.classList.remove("is-settling"), 780);
   }, 360);
 }
 
-if (capturedFlipTiles.length) {
-  window.setInterval(rotateCapturedTile, 2400);
-  window.setTimeout(rotateCapturedTile, 1200);
+if (capturedCycleTiles.length) {
+  window.setInterval(cycleCapturedTile, 2400);
+  window.setTimeout(cycleCapturedTile, 1200);
 }
