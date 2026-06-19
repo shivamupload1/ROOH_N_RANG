@@ -258,3 +258,82 @@ if (capturedCycleTiles.length) {
   window.setInterval(cycleCapturedTile, 2300);
   window.setTimeout(cycleCapturedTile, 1200);
 }
+// Spotlight Films cinematic player. Add real YouTube embed URLs to data-youtube-src.
+const spotlightRoot = document.querySelector("[data-spotlight]");
+const spotlightPlayer = document.querySelector(".spotlight-player");
+const spotlightMainImage = document.getElementById("spotlight-main-image");
+const spotlightTitle = document.getElementById("spotlight-title");
+const spotlightCopy = document.getElementById("spotlight-copy");
+const spotlightPlay = document.getElementById("spotlight-play");
+const spotlightThumbs = Array.from(document.querySelectorAll(".spotlight-thumb"));
+const youtubeModal = document.getElementById("youtube-modal");
+const youtubeFrame = document.getElementById("youtube-frame");
+const youtubeClose = document.getElementById("youtube-modal-close");
+let activeYoutubeSrc = spotlightPlay ? spotlightPlay.getAttribute("data-youtube-src") || "" : "";
+
+function setSpotlightThumb(thumb) {
+  if (!thumb || !spotlightMainImage || !spotlightTitle || !spotlightCopy || !spotlightPlay) return;
+  const nextImage = thumb.getAttribute("data-spotlight-image") || "";
+  const nextTitle = thumb.getAttribute("data-spotlight-title") || "";
+  const nextCopy = thumb.getAttribute("data-spotlight-copy") || "";
+  activeYoutubeSrc = thumb.getAttribute("data-youtube-src") || "";
+  spotlightThumbs.forEach((item) => item.classList.toggle("is-active", item === thumb));
+  if (spotlightPlayer) spotlightPlayer.classList.add("is-switching");
+  window.setTimeout(() => {
+    if (nextImage) spotlightMainImage.src = nextImage;
+    if (nextTitle) {
+      spotlightTitle.innerHTML = nextTitle;
+      spotlightPlay.setAttribute("aria-label", `Play ${nextTitle.replace(/&amp;/g, "and")} film`);
+    }
+    if (nextCopy) spotlightCopy.textContent = nextCopy;
+    spotlightPlay.setAttribute("data-youtube-src", activeYoutubeSrc);
+    if (spotlightPlayer) spotlightPlayer.classList.remove("is-switching");
+  }, 180);
+}
+
+spotlightThumbs.forEach((thumb) => {
+  thumb.addEventListener("click", () => setSpotlightThumb(thumb));
+});
+
+function openYoutubeModal(src) {
+  if (!src || !youtubeModal || !youtubeFrame) {
+    if (spotlightRoot) {
+      spotlightRoot.classList.add("is-youtube-pending");
+      window.setTimeout(() => spotlightRoot.classList.remove("is-youtube-pending"), 900);
+    }
+    return;
+  }
+  const separator = src.includes("?") ? "&" : "?";
+  youtubeFrame.src = `${src}${separator}autoplay=1&rel=0`;
+  youtubeModal.hidden = false;
+  document.body.classList.add("video-modal-open");
+}
+
+function closeYoutubeModal() {
+  if (!youtubeModal || !youtubeFrame) return;
+  youtubeModal.hidden = true;
+  youtubeFrame.src = "";
+  document.body.classList.remove("video-modal-open");
+}
+
+if (spotlightPlay) {
+  spotlightPlay.addEventListener("click", () => openYoutubeModal(activeYoutubeSrc));
+}
+if (youtubeClose) youtubeClose.addEventListener("click", closeYoutubeModal);
+if (youtubeModal) {
+  youtubeModal.addEventListener("click", (event) => {
+    if (event.target === youtubeModal) closeYoutubeModal();
+  });
+}
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeYoutubeModal();
+});
+
+// Optional validation/deep-link helper: main.html?scrollTo=spotlight
+const scrollTarget = new URLSearchParams(window.location.search).get("scrollTo");
+if (scrollTarget) {
+  window.setTimeout(() => {
+    const target = document.getElementById(scrollTarget);
+    if (target) target.scrollIntoView({ block: "start" });
+  }, 420);
+}
