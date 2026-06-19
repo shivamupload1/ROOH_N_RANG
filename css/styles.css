@@ -3799,3 +3799,427 @@ h3 {
     width: calc(100% - 18px);
   }
 }
+
+
+/* Glass header, side menu, and featured story final pass */
+.story-header {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  height: clamp(58px, 4.2vw, 72px) !important;
+  padding: 0 clamp(18px, 2.3vw, 54px) !important;
+  background: rgba(22, 20, 18, 0.2) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #fff !important;
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
+  transition: background 320ms ease, box-shadow 320ms ease, color 320ms ease, border-color 320ms ease;
+}
+
+.story-header.is-scrolled {
+  background: rgba(22, 20, 18, 0.28) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.1);
+}
+
+.story-logo {
+  color: inherit !important;
+  font-size: clamp(17px, 1.28vw, 23px) !important;
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.32);
+}
+
+.story-logo span {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.story-menu {
+  width: clamp(38px, 2.9vw, 50px) !important;
+  height: clamp(38px, 2.9vw, 50px) !important;
+  color: inherit !important;
+  border-radius: 999px;
+}
+
+.story-menu:hover,
+.story-action-icon:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.story-actions--icons {
+  gap: clamp(12px, 1.15vw, 22px) !important;
+  color: inherit !important;
+}
+
+.story-action-icon {
+  width: clamp(34px, 2.45vw, 44px);
+  height: clamp(34px, 2.45vw, 44px);
+  display: inline-grid;
+  place-items: center;
+  color: inherit;
+  border-radius: 999px;
+}
+
+.story-actions--icons .story-action-icon {
+  display: inline-grid !important;
+}
+
+.story-action-icon svg {
+  width: clamp(18px, 1.08vw, 21px);
+  height: clamp(18px, 1.08vw, 21px);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.story-action-icon:nth-child(2) svg path {
+  fill: currentColor;
+  stroke: none;
+}
+
+.story-action-icon--whatsapp text {
+  fill: currentColor;
+  stroke: none;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 8.8px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.story-action-icon:focus-visible,
+.story-menu:focus-visible,
+.story-menu-close:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 3px;
+}
+
+.story-main > .story-hero {
+  width: 100vw !important;
+  height: 100svh !important;
+  min-height: 100svh !important;
+  margin: 0 0 clamp(74px, 7vw, 132px) !important;
+  background: #111 !important;
+}
+
+.story-hero__image {
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+.story-page .menu-overlay {
+  background: rgba(16, 15, 13, 0.14) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.story-page .story-side-menu {
+  width: min(980px, 92vw) !important;
+  max-width: 980px !important;
+  background: rgba(255, 254, 251, 0.62) !important;
+  backdrop-filter: blur(26px) saturate(1.12);
+  -webkit-backdrop-filter: blur(26px) saturate(1.12);
+  overflow: hidden !important;
+  isolation: isolate;
+}
+
+.story-page .story-side-menu::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.18;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(32, 28, 24, 0.38) 0.7px, transparent 0.7px);
+  background-size: 3px 3px;
+  mix-blend-mode: multiply;
+}
+
+.side-menu__layout,
+.side-menu__nav-panel,
+.side-menu__instagram {
+  position: relative;
+  z-index: 1;
+}
+
+.side-menu__layout {
+  min-height: 100vh !important;
+  grid-template-columns: minmax(390px, 1fr) minmax(310px, 0.78fr) !important;
+}
+
+.side-menu__nav-panel {
+  min-height: 100vh !important;
+  padding: clamp(58px, 7vh, 92px) clamp(42px, 5vw, 84px) !important;
+  background: rgba(255, 254, 251, 0.38) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.story-menu-close {
+  color: #1b1714 !important;
+}
+
+.story-page .side-menu__links {
+  margin: auto 0 !important;
+  gap: clamp(22px, 3.6vh, 42px) !important;
+}
+
+.story-page .side-menu__links a {
+  font-size: clamp(30px, 2.4vw, 42px) !important;
+}
+
+.side-menu__instagram {
+  min-height: 100vh !important;
+  justify-content: flex-start !important;
+  gap: clamp(16px, 2.4vh, 28px) !important;
+  padding: clamp(54px, 7vh, 92px) clamp(28px, 4vw, 58px) clamp(40px, 6vh, 72px) !important;
+  background: rgba(255, 254, 251, 0.32) !important;
+}
+
+.side-menu__brand,
+.instagram-socials {
+  display: none !important;
+}
+
+.side-menu__instagram h2 {
+  color: rgba(23, 20, 18, 0.5) !important;
+  font-family: Inter, Arial, sans-serif !important;
+  font-size: clamp(13px, 1.1vw, 17px) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.instagram-stack {
+  width: min(330px, 100%) !important;
+  height: min(calc(100vh - 180px), 820px);
+  margin-top: clamp(18px, 3.2vh, 42px);
+  align-self: center;
+  display: grid !important;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+
+.instagram-stack img {
+  height: 100% !important;
+  aspect-ratio: auto !important;
+}
+
+.story-featured--reference {
+  width: 100vw !important;
+  max-width: none !important;
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+  margin-bottom: clamp(82px, 8vw, 150px) !important;
+}
+
+.story-featured--reference .story-featured-intro {
+  width: min(1120px, calc(100% - 48px));
+  margin-bottom: clamp(28px, 4vw, 64px);
+}
+
+.story-featured--reference .story-featured-intro h2 {
+  margin: 12px 0 0;
+  color: #191513;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(42px, 5vw, 76px);
+  font-weight: 500;
+  line-height: 0.96;
+}
+
+.story-featured--reference .featured-story-panel {
+  padding: clamp(48px, 5.2vw, 90px) 0;
+}
+
+.story-featured--reference .featured-story-row {
+  width: min(1320px, calc(100% - 56px));
+}
+
+.featured-journal-main {
+  padding-top: clamp(74px, 5vw, 104px) !important;
+}
+
+.featured-journal-hero {
+  margin-bottom: clamp(16px, 2vw, 30px) !important;
+}
+
+.featured-journal-hero p {
+  margin-top: 14px !important;
+}
+
+.featured-journal-hero a {
+  margin-top: 16px !important;
+}
+
+.featured-journal-stack {
+  width: min(920px, calc(100% - 24px)) !important;
+}
+
+.featured-journal-frame + .featured-journal-frame {
+  margin-top: clamp(1px, 0.22vw, 4px) !important;
+}
+
+@media (min-width: 2400px) {
+  .story-featured--reference .featured-story-row {
+    width: min(1760px, calc(100% - 260px));
+  }
+
+  .featured-journal-stack {
+    width: min(1120px, calc(100% - 220px)) !important;
+  }
+}
+
+@media (max-width: 920px) {
+  .story-header {
+    height: 56px !important;
+    padding: 0 12px !important;
+  }
+
+  .story-actions--icons {
+    gap: 4px !important;
+  }
+
+  .story-action-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .story-action-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .story-main > .story-hero {
+    height: 100svh !important;
+    min-height: 100svh !important;
+  }
+
+  .story-page .story-side-menu {
+    width: 100vw !important;
+    max-width: none !important;
+    overflow-y: auto !important;
+  }
+
+  .side-menu__layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .side-menu__nav-panel,
+  .side-menu__instagram {
+    min-height: 100svh !important;
+  }
+
+  .instagram-stack {
+    width: min(420px, 86vw) !important;
+    height: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+
+  .instagram-stack img {
+    aspect-ratio: 3 / 4 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .story-logo {
+    font-size: 12px !important;
+  }
+
+  .story-menu {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .story-actions--icons {
+    gap: 1px !important;
+  }
+
+  .story-action-icon {
+    width: 24px;
+    height: 28px;
+  }
+
+  .story-action-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .story-action-icon--whatsapp text {
+    font-size: 8px;
+  }
+
+  .story-featured--reference .story-featured-intro h2 {
+    font-size: 38px;
+  }
+
+  .story-featured--reference .featured-story-row {
+    width: calc(100% - 22px);
+  }
+}
+
+
+/* Mobile icon header hard override */
+.story-header .story-actions--icons {
+  display: flex !important;
+  width: auto !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  overflow: visible !important;
+}
+
+.story-header .story-actions--icons .story-action-icon {
+  flex: 0 0 auto;
+  display: inline-grid !important;
+}
+
+@media (max-width: 560px) {
+  .story-header .story-actions--icons {
+    gap: 0 !important;
+    min-width: 100px !important;
+  }
+
+  .story-header .story-actions--icons .story-action-icon {
+    display: inline-grid !important;
+  }
+}
+
+/* Final small-screen action icon visibility */
+@media (max-width: 560px) {
+  .story-header .story-actions--icons {
+    position: absolute !important;
+    right: 7px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0 !important;
+    width: auto !important;
+    min-width: 96px !important;
+    max-width: 110px !important;
+    overflow: visible !important;
+    margin-left: 0 !important;
+    justify-content: flex-end !important;
+    white-space: nowrap !important;
+  }
+
+  .story-header .story-actions--icons a.story-action-icon,
+  .story-header .story-actions--icons a.story-action-icon:nth-child(1),
+  .story-header .story-actions--icons a.story-action-icon:nth-child(2),
+  .story-header .story-actions--icons a.story-action-icon:nth-child(3),
+  .story-header .story-actions--icons a.story-action-icon:nth-child(4) {
+    display: inline-grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 24px !important;
+    height: 28px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    padding: 0 !important;
+  }
+
+  .story-header .story-actions--icons a.story-action-icon svg {
+    width: 13.5px !important;
+    height: 13.5px !important;
+  }
+}
