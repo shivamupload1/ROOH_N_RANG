@@ -171,12 +171,56 @@ if (cinemaVideo && cinemaProgress) {
     cinemaProgress.style.width = `${percent}%`;
   });
 }
-// Captured Moments smooth dissolve animation
+// Captured Moments smooth same-ratio dissolve animation
+const capturedMosaic = document.querySelector(".story-mosaic--final");
 const capturedCycleTiles = Array.from(document.querySelectorAll(".story-mosaic--final [data-cycle-images]"));
 let capturedCyclePointer = 0;
+const capturedImageCache = new Map();
+let capturedLayoutTimer;
 
-function highResCapturedUrl(url) {
-  return url.replace(/([?&]w=)\d+/i, (_, prefix) => `${prefix}2400`);
+function getCapturedColumnCount() {
+  const width = window.innerWidth;
+  if (width < 560) return 2;
+  if (width < 920) return 3;
+  if (width < 1600) return 8;
+  if (width < 2400) return 8;
+  if (width < 3200) return 10;
+  return 12;
+}
+
+function layoutCapturedMasonry() {
+  if (!capturedMosaic || !capturedCycleTiles.length) return;
+  const columnCount = getCapturedColumnCount();
+  if (capturedMosaic.dataset.columns === String(columnCount) && capturedMosaic.querySelector(".story-mosaic-column")) return;
+  capturedMosaic.dataset.columns = String(columnCount);
+  capturedMosaic.style.setProperty("--captured-columns", String(columnCount));
+  capturedMosaic.style.setProperty("grid-template-columns", `repeat(${columnCount}, minmax(0, 1fr))`, "important");
+  const columns = Array.from({ length: columnCount }, () => {
+    const column = document.createElement("div");
+    column.className = "story-mosaic-column";
+    return { element: column, units: 0 };
+  });
+  capturedMosaic.textContent = "";
+  capturedCycleTiles.forEach((tile) => {
+    const group = tile.getAttribute("data-cycle-group") || "landscape";
+    const units = group === "portrait" ? 1.5 : 0.667;
+    const target = columns.reduce((shortest, column) => (column.units < shortest.units ? column : shortest), columns[0]);
+    target.element.appendChild(tile);
+    target.units += units;
+  });
+  columns.forEach((column) => capturedMosaic.appendChild(column.element));
+}
+
+function preloadCapturedImage(src) {
+  if (capturedImageCache.has(src)) return capturedImageCache.get(src);
+  const preload = new Promise((resolve, reject) => {
+    const next = new Image();
+    next.onload = () => resolve(src);
+    next.onerror = reject;
+    next.src = src;
+  });
+  capturedImageCache.set(src, preload);
+  return preload;
 }
 
 function cycleCapturedTile() {
@@ -187,19 +231,30 @@ function cycleCapturedTile() {
   const images = (tile.getAttribute("data-cycle-images") || "").split("|").filter(Boolean);
   if (!image || images.length < 2) return;
   const nextIndex = (Number(tile.dataset.cycleIndex || 0) + 1) % images.length;
-  tile.dataset.cycleIndex = String(nextIndex);
   const nextImage = images[nextIndex];
-  tile.classList.add("is-fading");
-  window.setTimeout(() => {
-    image.src = nextImage;
-    tile.setAttribute("data-lightbox", highResCapturedUrl(nextImage));
-    tile.classList.remove("is-fading");
-    tile.classList.add("is-settling");
-    window.setTimeout(() => tile.classList.remove("is-settling"), 780);
-  }, 360);
+  preloadCapturedImage(nextImage).then(() => {
+    tile.dataset.cycleIndex = String(nextIndex);
+    tile.classList.add("is-fading");
+    window.setTimeout(() => {
+      image.src = nextImage;
+      tile.setAttribute("data-lightbox", nextImage);
+      tile.classList.remove("is-fading");
+      tile.classList.add("is-settling");
+      window.setTimeout(() => tile.classList.remove("is-settling"), 780);
+    }, 320);
+  }).catch(() => {});
 }
 
 if (capturedCycleTiles.length) {
-  window.setInterval(cycleCapturedTile, 2400);
+  layoutCapturedMasonry();
+  window.addEventListener("resize", () => {
+    window.clearTimeout(capturedLayoutTimer);
+    capturedLayoutTimer = window.setTimeout(layoutCapturedMasonry, 160);
+  }, { passive: true });
+  capturedCycleTiles.forEach((tile) => {
+    const images = (tile.getAttribute("data-cycle-images") || "").split("|").filter(Boolean);
+    images.slice(1).forEach((src) => preloadCapturedImage(src));
+  });
+  window.setInterval(cycleCapturedTile, 2300);
   window.setTimeout(cycleCapturedTile, 1200);
 }

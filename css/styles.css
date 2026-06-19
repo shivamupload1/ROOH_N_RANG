@@ -3386,3 +3386,95 @@ h3 {
     animation: none;
   }
 }
+
+/* Local data gallery edge fade and ratio-safe frame */
+.story-mosaic-frame {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: clamp(720px, 56vw, 840px);
+  overflow: hidden;
+}
+
+.story-mosaic-frame::before,
+.story-mosaic-frame::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  height: clamp(120px, 12vw, 220px);
+  pointer-events: none;
+}
+
+.story-mosaic-frame::before {
+  top: -1px;
+  background: linear-gradient(180deg, rgba(255, 254, 251, 0.98) 0%, rgba(247, 248, 241, 0.78) 34%, rgba(247, 248, 241, 0) 100%);
+}
+
+.story-mosaic-frame::after {
+  bottom: -1px;
+  background: linear-gradient(0deg, rgba(255, 254, 251, 0.98) 0%, rgba(247, 248, 241, 0.78) 34%, rgba(247, 248, 241, 0) 100%);
+}
+
+.story-mosaic-frame .story-mosaic--final {
+  display: grid !important;
+  grid-template-columns: repeat(var(--captured-columns, 8), minmax(0, 1fr));
+  gap: clamp(2px, 0.28vw, 5px);
+  width: 100%;
+  max-width: none;
+  height: auto;
+  min-height: 100%;
+  columns: auto !important;
+  column-gap: clamp(2px, 0.28vw, 5px);
+}
+
+.story-mosaic-column {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2px, 0.28vw, 5px);
+  min-width: 0;
+}
+
+.story-mosaic--final .story-tile,
+.story-mosaic--final .story-tile.tall,
+.story-mosaic--final .story-tile.wide,
+.story-mosaic--final .story-tile.big,
+.story-mosaic--final .story-tile.panorama {
+  width: 100%;
+  margin: 0;
+}
+
+.story-mosaic--final .story-tile img,
+.story-mosaic--final .story-tile.tall img {
+  transition: transform 900ms ease, filter 900ms ease, opacity 430ms ease;
+}
+
+@media (min-width: 2400px) {
+  .story-mosaic-frame {
+    height: 900px;
+  }
+}
+
+@media (min-width: 3200px) {
+  .story-mosaic-frame {
+    height: 1040px;
+  }
+}
+
+@media (max-width: 920px) {
+  .story-mosaic-frame {
+    height: clamp(760px, 145vw, 1080px);
+  }
+}
+
+@media (max-width: 560px) {
+  .story-mosaic-frame {
+    height: clamp(680px, 172vw, 960px);
+  }
+
+  .story-mosaic-frame::before,
+  .story-mosaic-frame::after {
+    height: 94px;
+  }
+}
