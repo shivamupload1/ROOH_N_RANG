@@ -12,6 +12,18 @@
     {
       "source": "/client-gallery",
       "destination": "/client-gallery.html"
+    },
+    {
+      "source": "/featured-stories",
+      "destination": "/featured-stories.html"
+    },
+    {
+      "source": "/stories/bharat-mehak",
+      "destination": "/featured-story-bharat-mehak.html"
+    },
+    {
+      "source": "/stories/meera-arjun",
+      "destination": "/featured-story-meera-arjun.html"
     }
   ],
   "headers": [
