@@ -68,16 +68,6 @@
   <main class="story-main">
     <section class="story-hero story-hero--immersive" aria-label="Featured visual story">
       <img class="story-hero__image" id="main-hero-image" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=3000&auto=format&fit=crop" alt="Wedding bouquet cinematic frame">
-      <div class="story-hero__veil" aria-hidden="true"></div>
-      <div class="story-hero__copy">
-        <span>Wedding Stories in Motion</span>
-        <h1>Rooh n Rang</h1>
-        <p>Photographs, films, and quiet in-between moments framed with feeling.</p>
-        <div class="story-hero__links">
-          <a href="#captured">View Moments</a>
-          <a href="#spotlight">Watch Films</a>
-        </div>
-      </div>
       <div class="story-hero__dots" id="main-hero-dots" aria-hidden="true"></div>
     </section>
 
@@ -183,52 +173,59 @@
       </section>
     </section>
 
-    <section class="story-spotlight story-spotlight--cinematic" id="spotlight" data-spotlight>
-      <div class="story-section-title compact">
+    <section class="story-spotlight story-spotlight--cinematic story-spotlight--custom" id="spotlight" data-spotlight>
+      <div class="story-section-title compact spotlight-title--custom">
         <span>Moving Memories</span>
         <h2>Spotlight Films</h2>
+        <i aria-hidden="true"></i>
       </div>
-      <div class="spotlight-stage">
-        <figure class="spotlight-player">
+      <div class="spotlight-stage spotlight-stage--custom">
+        <figure class="spotlight-player spotlight-player--custom">
           <img id="spotlight-main-image" src="assets/featured-stories/bharat-mehak/10.jpg" width="1800" height="1200" loading="lazy" alt="Bharat and Mehak wedding film preview">
           <div class="spotlight-player__shade" aria-hidden="true"></div>
-          <button class="spotlight-play" id="spotlight-play" type="button" data-youtube-src="" aria-label="Play Bharat and Mehak film">
+          <button class="spotlight-play spotlight-play--custom" id="spotlight-play" type="button" data-youtube-src="" aria-label="Play Bharat and Mehak film">
             <span class="spotlight-play__icon" aria-hidden="true"></span>
-            <span>Watch the Story</span>
           </button>
-          <figcaption class="spotlight-caption">
-            <span id="spotlight-kicker">Featured Film</span>
+          <figcaption class="spotlight-caption spotlight-caption--custom">
             <h3 id="spotlight-title">Bharat &amp; Mehak</h3>
-            <p id="spotlight-copy">A warm wedding film woven through family, colour, music, and the tiny pauses between rituals.</p>
+            <p id="spotlight-copy">Watch the Story</p>
           </figcaption>
+          <div class="spotlight-player-controls" aria-label="Custom film controls">
+            <button class="control-icon control-icon--play" type="button" aria-label="Play or pause preview" data-spotlight-toggle><span></span></button>
+            <button class="spotlight-player-controls__bar" type="button" aria-label="Play or pause preview" data-spotlight-toggle><span></span></button>
+            <div class="spotlight-player-controls__icons">
+              <button class="control-icon control-icon--volume" type="button" aria-label="Mute preview" data-spotlight-volume></button>
+              <button class="control-icon control-icon--settings" type="button" aria-label="Film settings" data-spotlight-settings></button>
+              <span class="control-icon control-icon--brand" aria-hidden="true">RNR</span>
+              <button class="control-icon control-icon--fullscreen" type="button" aria-label="Fullscreen preview" data-spotlight-fullscreen></button>
+            </div>
+          </div>
         </figure>
-        <div class="spotlight-strip" aria-label="Spotlight film list">
-          <button class="spotlight-thumb is-active" type="button" data-spotlight-title="Bharat &amp; Mehak" data-spotlight-copy="A warm wedding film woven through family, colour, music, and the tiny pauses between rituals." data-spotlight-image="assets/featured-stories/bharat-mehak/10.jpg" data-youtube-src="">
-            <img src="assets/featured-stories/bharat-mehak/10.jpg" width="900" height="650" loading="lazy" alt="Bharat and Mehak film thumbnail">
-            <span>Bharat &amp; Mehak</span>
-          </button>
-          <button class="spotlight-thumb" type="button" data-spotlight-title="Meera &amp; Arjun" data-spotlight-copy="Soft portraits, playful rituals, and quiet in-between moments shaped into a gentle moving memory." data-spotlight-image="assets/featured-stories/meera-arjun/04.jpg" data-youtube-src="">
-            <img src="assets/featured-stories/meera-arjun/04.jpg" width="900" height="650" loading="lazy" alt="Meera and Arjun film thumbnail">
-            <span>Meera &amp; Arjun</span>
-          </button>
-          <button class="spotlight-thumb" type="button" data-spotlight-title="Haldi Light" data-spotlight-copy="A sunlit chapter built from laughter, turmeric, hands, and colour in motion." data-spotlight-image="assets/grid-gallery/landscape-010.jpg" data-youtube-src="">
-            <img src="assets/grid-gallery/landscape-010.jpg" width="900" height="650" loading="lazy" alt="Haldi wedding film thumbnail">
-            <span>Haldi Light</span>
-          </button>
-          <button class="spotlight-thumb" type="button" data-spotlight-title="The Vows" data-spotlight-copy="An intimate ceremony edit with sound, breath, glances, and the weight of the promise." data-spotlight-image="assets/grid-gallery/landscape-023.jpg" data-youtube-src="">
-            <img src="assets/grid-gallery/landscape-023.jpg" width="900" height="650" loading="lazy" alt="Wedding vow film thumbnail">
-            <span>The Vows</span>
-          </button>
-          <button class="spotlight-thumb" type="button" data-spotlight-title="Sangeet Night" data-spotlight-copy="Movement, rhythm, lights, and the kind of joy that belongs to the whole room." data-spotlight-image="assets/grid-gallery/landscape-037.jpg" data-youtube-src="">
-            <img src="assets/grid-gallery/landscape-037.jpg" width="900" height="650" loading="lazy" alt="Sangeet night film thumbnail">
-            <span>Sangeet Night</span>
-          </button>
-          <button class="spotlight-thumb" type="button" data-spotlight-title="Portrait Film" data-spotlight-copy="A quiet couple portrait sequence made for slow cinema and honest emotion." data-spotlight-image="assets/grid-gallery/portrait-012.jpg" data-youtube-src="">
-            <img src="assets/grid-gallery/portrait-012.jpg" width="700" height="1000" loading="lazy" alt="Portrait wedding film thumbnail">
-            <span>Portrait Film</span>
-          </button>
+        <div class="spotlight-carousel" aria-label="Spotlight film list">
+          <button class="spotlight-arrow spotlight-arrow--prev" type="button" aria-label="Previous film" data-spotlight-prev></button>
+          <div class="spotlight-strip spotlight-strip--custom">
+            <button class="spotlight-thumb is-active" type="button" data-spotlight-title="Bharat &amp; Mehak" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/featured-stories/bharat-mehak/10.jpg" data-youtube-src="">
+              <img src="assets/featured-stories/bharat-mehak/10.jpg" width="900" height="650" loading="lazy" alt="Bharat and Mehak film thumbnail">
+            </button>
+            <button class="spotlight-thumb" type="button" data-spotlight-title="Meera &amp; Arjun" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/featured-stories/meera-arjun/04.jpg" data-youtube-src="">
+              <img src="assets/featured-stories/meera-arjun/04.jpg" width="900" height="650" loading="lazy" alt="Meera and Arjun film thumbnail">
+            </button>
+            <button class="spotlight-thumb" type="button" data-spotlight-title="Haldi Light" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/landscape-010.jpg" data-youtube-src="">
+              <img src="assets/grid-gallery/landscape-010.jpg" width="900" height="650" loading="lazy" alt="Haldi wedding film thumbnail">
+            </button>
+            <button class="spotlight-thumb" type="button" data-spotlight-title="The Vows" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/landscape-023.jpg" data-youtube-src="">
+              <img src="assets/grid-gallery/landscape-023.jpg" width="900" height="650" loading="lazy" alt="Wedding vow film thumbnail">
+            </button>
+            <button class="spotlight-thumb" type="button" data-spotlight-title="Sangeet Night" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/landscape-037.jpg" data-youtube-src="">
+              <img src="assets/grid-gallery/landscape-037.jpg" width="900" height="650" loading="lazy" alt="Sangeet night film thumbnail">
+            </button>
+            <button class="spotlight-thumb" type="button" data-spotlight-title="Portrait Film" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/portrait-012.jpg" data-youtube-src="">
+              <img src="assets/grid-gallery/portrait-012.jpg" width="700" height="1000" loading="lazy" alt="Portrait wedding film thumbnail">
+            </button>
+          </div>
+          <button class="spotlight-arrow spotlight-arrow--next" type="button" aria-label="Next film" data-spotlight-next></button>
         </div>
-        <div class="spotlight-progress" aria-hidden="true"><span></span></div>
+        <div class="spotlight-ornament" aria-hidden="true"></div>
       </div>
     </section>
     <section class="story-cinema story-cinema--living" id="films">
@@ -236,16 +233,6 @@
       <div class="story-wave story-wave--top"></div>
       <div class="story-wave story-wave--bottom"></div>
       <div class="cinema-grain" aria-hidden="true"></div>
-      <div class="cinema-reel cinema-reel--left" aria-hidden="true">
-        <figure><img src="assets/featured-stories/bharat-mehak/03.jpg" width="650" height="900" loading="lazy" alt=""></figure>
-        <figure><img src="assets/grid-gallery/portrait-006.jpg" width="650" height="900" loading="lazy" alt=""></figure>
-        <figure><img src="assets/featured-stories/meera-arjun/12.jpg" width="650" height="900" loading="lazy" alt=""></figure>
-      </div>
-      <div class="cinema-reel cinema-reel--right" aria-hidden="true">
-        <figure><img src="assets/featured-stories/bharat-mehak/10.jpg" width="650" height="900" loading="lazy" alt=""></figure>
-        <figure><img src="assets/featured-stories/bharat-mehak/18.jpg" width="650" height="900" loading="lazy" alt=""></figure>
-        <figure><img src="assets/featured-stories/meera-arjun/04.jpg" width="650" height="900" loading="lazy" alt=""></figure>
-      </div>
       <div class="story-cinema__content">
         <span class="cinema-kicker">Films by Rooh n Rang</span>
         <h2>Soul <span>+</span> Cinema</h2>

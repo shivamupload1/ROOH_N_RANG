@@ -266,6 +266,12 @@ const spotlightTitle = document.getElementById("spotlight-title");
 const spotlightCopy = document.getElementById("spotlight-copy");
 const spotlightPlay = document.getElementById("spotlight-play");
 const spotlightThumbs = Array.from(document.querySelectorAll(".spotlight-thumb"));
+const spotlightPrev = document.querySelector("[data-spotlight-prev]");
+const spotlightNext = document.querySelector("[data-spotlight-next]");
+const spotlightToggleControls = Array.from(document.querySelectorAll("[data-spotlight-toggle]"));
+const spotlightVolume = document.querySelector("[data-spotlight-volume]");
+const spotlightSettings = document.querySelector("[data-spotlight-settings]");
+const spotlightFullscreen = document.querySelector("[data-spotlight-fullscreen]");
 const youtubeModal = document.getElementById("youtube-modal");
 const youtubeFrame = document.getElementById("youtube-frame");
 const youtubeClose = document.getElementById("youtube-modal-close");
@@ -278,6 +284,7 @@ function setSpotlightThumb(thumb) {
   const nextCopy = thumb.getAttribute("data-spotlight-copy") || "";
   activeYoutubeSrc = thumb.getAttribute("data-youtube-src") || "";
   spotlightThumbs.forEach((item) => item.classList.toggle("is-active", item === thumb));
+  if (spotlightPlayer) spotlightPlayer.classList.remove("is-playing");
   if (spotlightPlayer) spotlightPlayer.classList.add("is-switching");
   window.setTimeout(() => {
     if (nextImage) spotlightMainImage.src = nextImage;
@@ -295,12 +302,39 @@ spotlightThumbs.forEach((thumb) => {
   thumb.addEventListener("click", () => setSpotlightThumb(thumb));
 });
 
+function moveSpotlight(direction) {
+  if (!spotlightThumbs.length) return;
+  const activeIndex = Math.max(0, spotlightThumbs.findIndex((thumb) => thumb.classList.contains("is-active")));
+  const nextIndex = (activeIndex + direction + spotlightThumbs.length) % spotlightThumbs.length;
+  setSpotlightThumb(spotlightThumbs[nextIndex]);
+  spotlightThumbs[nextIndex].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+}
+
+if (spotlightPrev) spotlightPrev.addEventListener("click", () => moveSpotlight(-1));
+if (spotlightNext) spotlightNext.addEventListener("click", () => moveSpotlight(1));
+
+function setSpotlightPreviewPlaying(force) {
+  if (!spotlightPlayer) return false;
+  const shouldPlay = typeof force === "boolean" ? force : !spotlightPlayer.classList.contains("is-playing");
+  spotlightPlayer.classList.toggle("is-playing", shouldPlay);
+  if (spotlightRoot) {
+    spotlightRoot.classList.add("is-custom-playing");
+    window.setTimeout(() => spotlightRoot.classList.remove("is-custom-playing"), 900);
+  }
+  return shouldPlay;
+}
+
+function toggleSpotlightPlayback() {
+  if (activeYoutubeSrc && youtubeModal && youtubeFrame) {
+    openYoutubeModal(activeYoutubeSrc);
+    return;
+  }
+  setSpotlightPreviewPlaying();
+}
+
 function openYoutubeModal(src) {
   if (!src || !youtubeModal || !youtubeFrame) {
-    if (spotlightRoot) {
-      spotlightRoot.classList.add("is-youtube-pending");
-      window.setTimeout(() => spotlightRoot.classList.remove("is-youtube-pending"), 900);
-    }
+    setSpotlightPreviewPlaying();
     return;
   }
   const separator = src.includes("?") ? "&" : "?";
@@ -317,7 +351,35 @@ function closeYoutubeModal() {
 }
 
 if (spotlightPlay) {
-  spotlightPlay.addEventListener("click", () => openYoutubeModal(activeYoutubeSrc));
+  spotlightPlay.addEventListener("click", toggleSpotlightPlayback);
+}
+spotlightToggleControls.forEach((control) => control.addEventListener("click", toggleSpotlightPlayback));
+if (spotlightVolume && spotlightPlayer) {
+  spotlightVolume.addEventListener("click", () => spotlightPlayer.classList.toggle("is-muted"));
+}
+if (spotlightSettings && spotlightPlayer) {
+  spotlightSettings.addEventListener("click", () => {
+    spotlightPlayer.classList.add("is-control-pulse");
+    window.setTimeout(() => spotlightPlayer.classList.remove("is-control-pulse"), 700);
+  });
+}
+if (spotlightFullscreen && spotlightPlayer) {
+  spotlightFullscreen.addEventListener("click", () => {
+    if (document.fullscreenElement === spotlightPlayer && document.exitFullscreen) {
+      document.exitFullscreen();
+      return;
+    }
+    if (spotlightPlayer.requestFullscreen) {
+      spotlightPlayer.requestFullscreen().catch(() => spotlightPlayer.classList.toggle("is-custom-fullscreen"));
+      return;
+    }
+    spotlightPlayer.classList.toggle("is-custom-fullscreen");
+  });
+}
+if (spotlightPlayer) {
+  document.addEventListener("fullscreenchange", () => {
+    spotlightPlayer.classList.toggle("is-custom-fullscreen", document.fullscreenElement === spotlightPlayer);
+  });
 }
 if (youtubeClose) youtubeClose.addEventListener("click", closeYoutubeModal);
 if (youtubeModal) {
@@ -326,7 +388,10 @@ if (youtubeModal) {
   });
 }
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeYoutubeModal();
+  if (event.key === "Escape") {
+    closeYoutubeModal();
+    if (spotlightPlayer) spotlightPlayer.classList.remove("is-custom-fullscreen");
+  }
 });
 
 // Optional validation/deep-link helper: main.html?scrollTo=spotlight
