@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -67,7 +67,7 @@
 
   <main class="story-main">
     <section class="story-hero story-hero--immersive" aria-label="Featured visual story">
-      <img class="story-hero__image" id="main-hero-image" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=3000&auto=format&fit=crop" alt="Wedding bouquet cinematic frame">
+      <img class="story-hero__image" id="main-hero-image" src="assets/main-slideshow/main-slide-01.jpg" alt="Rooh N Rang wedding slideshow frame">
       <div class="story-hero__dots" id="main-hero-dots" aria-hidden="true"></div>
     </section>
 
@@ -180,15 +180,16 @@
         <i aria-hidden="true"></i>
       </div>
       <div class="spotlight-stage spotlight-stage--custom">
-        <figure class="spotlight-player spotlight-player--custom">
-          <img id="spotlight-main-image" src="assets/featured-stories/bharat-mehak/10.jpg" width="1800" height="1200" loading="lazy" alt="Bharat and Mehak wedding film preview">
+        <figure class="spotlight-player spotlight-player--custom spotlight-player--youtube">
+          <img id="spotlight-main-image" src="assets/main-slideshow/main-slide-04.jpg" width="1800" height="1200" loading="lazy" alt="Rooh N Rang YouTube film preview">
           <div class="spotlight-player__shade" aria-hidden="true"></div>
-          <button class="spotlight-play spotlight-play--custom" id="spotlight-play" type="button" data-youtube-src="" aria-label="Play Bharat and Mehak film">
+          <div class="spotlight-player__badge" aria-hidden="true">YouTube Film</div>
+          <button class="spotlight-play spotlight-play--custom" id="spotlight-play" type="button" data-youtube-src="https://www.youtube.com/embed/0snCjLrDjZk" aria-label="Play Rooh N Rang wedding film">
             <span class="spotlight-play__icon" aria-hidden="true"></span>
           </button>
           <figcaption class="spotlight-caption spotlight-caption--custom">
-            <h3 id="spotlight-title">Bharat &amp; Mehak</h3>
-            <p id="spotlight-copy">Watch the Story</p>
+            <h3 id="spotlight-title">Rooh N Rang Film</h3>
+            <p id="spotlight-copy">Watch on YouTube</p>
           </figcaption>
           <div class="spotlight-player-controls" aria-label="Custom film controls">
             <button class="control-icon control-icon--play" type="button" aria-label="Play or pause preview" data-spotlight-toggle><span></span></button>
@@ -203,24 +204,14 @@
         </figure>
         <div class="spotlight-carousel" aria-label="Spotlight film list">
           <button class="spotlight-arrow spotlight-arrow--prev" type="button" aria-label="Previous film" data-spotlight-prev></button>
-          <div class="spotlight-strip spotlight-strip--custom">
-            <button class="spotlight-thumb is-active" type="button" data-spotlight-title="Bharat &amp; Mehak" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/featured-stories/bharat-mehak/10.jpg" data-youtube-src="">
-              <img src="assets/featured-stories/bharat-mehak/10.jpg" width="900" height="650" loading="lazy" alt="Bharat and Mehak film thumbnail">
+          <div class="spotlight-strip spotlight-strip--custom spotlight-strip--youtube">
+            <button class="spotlight-thumb is-active" type="button" data-spotlight-title="Rooh N Rang Film" data-spotlight-copy="Watch on YouTube" data-spotlight-image="assets/main-slideshow/main-slide-04.jpg" data-youtube-src="https://www.youtube.com/embed/0snCjLrDjZk">
+              <img src="assets/main-slideshow/main-slide-04.jpg" width="900" height="650" loading="lazy" alt="Rooh N Rang YouTube film thumbnail">
+              <span>Rooh N Rang Film</span>
             </button>
-            <button class="spotlight-thumb" type="button" data-spotlight-title="Meera &amp; Arjun" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/featured-stories/meera-arjun/04.jpg" data-youtube-src="">
-              <img src="assets/featured-stories/meera-arjun/04.jpg" width="900" height="650" loading="lazy" alt="Meera and Arjun film thumbnail">
-            </button>
-            <button class="spotlight-thumb" type="button" data-spotlight-title="Haldi Light" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/landscape-010.jpg" data-youtube-src="">
-              <img src="assets/grid-gallery/landscape-010.jpg" width="900" height="650" loading="lazy" alt="Haldi wedding film thumbnail">
-            </button>
-            <button class="spotlight-thumb" type="button" data-spotlight-title="The Vows" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/landscape-023.jpg" data-youtube-src="">
-              <img src="assets/grid-gallery/landscape-023.jpg" width="900" height="650" loading="lazy" alt="Wedding vow film thumbnail">
-            </button>
-            <button class="spotlight-thumb" type="button" data-spotlight-title="Sangeet Night" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/landscape-037.jpg" data-youtube-src="">
-              <img src="assets/grid-gallery/landscape-037.jpg" width="900" height="650" loading="lazy" alt="Sangeet night film thumbnail">
-            </button>
-            <button class="spotlight-thumb" type="button" data-spotlight-title="Portrait Film" data-spotlight-copy="Watch the Story" data-spotlight-image="assets/grid-gallery/portrait-012.jpg" data-youtube-src="">
-              <img src="assets/grid-gallery/portrait-012.jpg" width="700" height="1000" loading="lazy" alt="Portrait wedding film thumbnail">
+            <button class="spotlight-thumb" type="button" data-spotlight-title="Wedding Story in Motion" data-spotlight-copy="Watch on YouTube" data-spotlight-image="assets/welcome/welcome-03.jpg" data-youtube-src="https://www.youtube.com/embed/_KrdKQXMjZs?list=RD_KrdKQXMjZs&amp;start_radio=1">
+              <img src="assets/welcome/welcome-03.jpg" width="900" height="650" loading="lazy" alt="Wedding story YouTube film thumbnail">
+              <span>Wedding Story</span>
             </button>
           </div>
           <button class="spotlight-arrow spotlight-arrow--next" type="button" aria-label="Next film" data-spotlight-next></button>
@@ -258,9 +249,15 @@
 
 
   <div class="youtube-modal" id="youtube-modal" hidden>
-    <button class="icon-button light youtube-modal__close" type="button" id="youtube-modal-close" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-    <div class="youtube-modal__frame">
-      <iframe id="youtube-frame" title="Spotlight film" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <div class="youtube-modal__panel" role="dialog" aria-modal="true" aria-labelledby="youtube-modal-title">
+      <div class="youtube-modal__topbar">
+        <span>Rooh N Rang Films</span>
+        <strong id="youtube-modal-title">Spotlight Film</strong>
+        <button class="icon-button light youtube-modal__close" type="button" id="youtube-modal-close" aria-label="Close video"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="youtube-modal__frame">
+        <iframe id="youtube-frame" title="Spotlight film" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
     </div>
   </div>
   <script src="js/main.js"></script>

@@ -1,4 +1,4 @@
-﻿const heroSlides = Array.from(document.querySelectorAll(".hero-slide"));
+const heroSlides = Array.from(document.querySelectorAll(".hero-slide"));
 let heroIndex = 0;
 
 function showHeroSlide(index) {
@@ -128,9 +128,16 @@ document.querySelectorAll("[data-like]").forEach((button) => {
 });
 
 const mainHeroImages = [
-  "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=3000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=3000&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=3000&auto=format&fit=crop"
+  "assets/main-slideshow/main-slide-01.jpg",
+  "assets/main-slideshow/main-slide-02.jpg",
+  "assets/main-slideshow/main-slide-03.jpg",
+  "assets/main-slideshow/main-slide-04.jpg",
+  "assets/main-slideshow/main-slide-05.jpg",
+  "assets/main-slideshow/main-slide-06.jpg",
+  "assets/main-slideshow/main-slide-07.jpg",
+  "assets/main-slideshow/main-slide-08.jpg",
+  "assets/main-slideshow/main-slide-09.jpg",
+  "assets/main-slideshow/main-slide-10.jpg"
 ];
 const mainHero = document.querySelector(".story-hero");
 const mainHeroImage = document.getElementById("main-hero-image");
@@ -275,6 +282,7 @@ const spotlightFullscreen = document.querySelector("[data-spotlight-fullscreen]"
 const youtubeModal = document.getElementById("youtube-modal");
 const youtubeFrame = document.getElementById("youtube-frame");
 const youtubeClose = document.getElementById("youtube-modal-close");
+const youtubeModalTitle = document.getElementById("youtube-modal-title");
 let activeYoutubeSrc = spotlightPlay ? spotlightPlay.getAttribute("data-youtube-src") || "" : "";
 
 function setSpotlightThumb(thumb) {
@@ -338,7 +346,8 @@ function openYoutubeModal(src) {
     return;
   }
   const separator = src.includes("?") ? "&" : "?";
-  youtubeFrame.src = `${src}${separator}autoplay=1&rel=0`;
+  youtubeFrame.src = `${src}${separator}autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  if (youtubeModalTitle && spotlightTitle) youtubeModalTitle.textContent = spotlightTitle.textContent || "Spotlight Film";
   youtubeModal.hidden = false;
   document.body.classList.add("video-modal-open");
 }
