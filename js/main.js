@@ -24,8 +24,117 @@ if (header) {
 
 const menuOpenButtons = document.querySelectorAll("[data-menu-open]");
 const menuCloseButtons = document.querySelectorAll("[data-menu-close]");
-menuOpenButtons.forEach((button) => button.addEventListener("click", () => document.body.classList.add("menu-open")));
+menuOpenButtons.forEach((button) => button.addEventListener("click", () => {
+  document.body.classList.remove("login-open");
+  document.body.classList.add("menu-open");
+}));
 menuCloseButtons.forEach((button) => button.addEventListener("click", () => document.body.classList.remove("menu-open")));
+
+let loginDrawerReady = false;
+
+function ensureLoginDrawer() {
+  if (loginDrawerReady || document.querySelector("[data-login-drawer]")) return;
+  document.body.insertAdjacentHTML("beforeend", `
+    <div class="login-overlay" data-login-close aria-hidden="true"></div>
+    <aside class="login-drawer" data-login-drawer data-auth-mode="login" role="dialog" aria-modal="true" aria-label="Rooh N Rang login">
+      <div class="login-drawer__visual" aria-hidden="true">
+        <span class="login-drawer__slide login-drawer__slide--one"></span>
+        <span class="login-drawer__slide login-drawer__slide--two"></span>
+        <span class="login-drawer__slide login-drawer__slide--three"></span>
+      </div>
+      <button class="login-drawer__close icon-button" type="button" data-login-close aria-label="Close login">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <section class="login-drawer__panel">
+        <div class="login-drawer__brand">
+          <span>ROOH N RANG</span>
+          <h2 data-login-title>Login</h2>
+          <p>Private gallery access, studio updates and future Supabase Auth will live here.</p>
+        </div>
+        <div class="login-drawer__switch" aria-label="Authentication mode">
+          <button type="button" class="is-active" data-login-mode="login" aria-pressed="true">Login</button>
+          <button type="button" data-login-mode="signup" aria-pressed="false">Signup</button>
+        </div>
+        <form class="login-drawer__form" data-login-form>
+          <label class="login-drawer__field login-drawer__field--signup">
+            <span>Name</span>
+            <input type="text" placeholder="Your name" autocomplete="name">
+          </label>
+          <label class="login-drawer__field">
+            <span>Email</span>
+            <input type="email" placeholder="name@example.com" autocomplete="email">
+          </label>
+          <label class="login-drawer__field">
+            <span>Password</span>
+            <input type="password" placeholder="Gallery password" autocomplete="current-password">
+          </label>
+          <button class="login-drawer__submit" type="submit" data-login-submit>Continue</button>
+        </form>
+        <p class="login-drawer__note">Placeholder only. Final login will connect with Supabase Auth and protected gallery links.</p>
+      </section>
+    </aside>
+  `);
+
+  document.querySelectorAll("[data-login-close]").forEach((button) => {
+    button.addEventListener("click", closeLoginDrawer);
+  });
+
+  document.querySelectorAll("[data-login-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const mode = button.getAttribute("data-login-mode") || "login";
+      const drawer = document.querySelector("[data-login-drawer]");
+      const title = document.querySelector("[data-login-title]");
+      const submit = document.querySelector("[data-login-submit]");
+      drawer?.setAttribute("data-auth-mode", mode);
+      document.querySelectorAll("[data-login-mode]").forEach((item) => {
+        const active = item.getAttribute("data-login-mode") === mode;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+      if (title) title.textContent = mode === "signup" ? "Signup" : "Login";
+      if (submit) submit.textContent = mode === "signup" ? "Create Account" : "Continue";
+    });
+  });
+
+  document.querySelector("[data-login-form]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    window.location.href = "client-gallery.html";
+  });
+
+  loginDrawerReady = true;
+}
+
+function openLoginDrawer(event) {
+  event?.preventDefault();
+  ensureLoginDrawer();
+  document.body.classList.remove("menu-open");
+  window.requestAnimationFrame(() => document.body.classList.add("login-open"));
+}
+
+function closeLoginDrawer() {
+  document.body.classList.remove("login-open");
+}
+
+document.querySelectorAll("[aria-label='Login'], [data-login-open]").forEach((button) => {
+  button.addEventListener("click", openLoginDrawer);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    document.body.classList.remove("menu-open", "login-open", "lightbox-open");
+  }
+});
+
+if (window.location.hash === "#login") {
+  window.setTimeout(openLoginDrawer, 80);
+}
+
+if (window.location.hash === "#menu") {
+  window.setTimeout(() => {
+    document.body.classList.remove("login-open");
+    document.body.classList.add("menu-open");
+  }, 80);
+}
 
 const featureImages = [
   "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=3000&auto=format&fit=crop",

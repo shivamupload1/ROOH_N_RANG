@@ -31,6 +31,7 @@ body {
 }
 
 body.menu-open,
+body.login-open,
 body.lightbox-open {
   overflow: hidden;
 }
@@ -3915,13 +3916,27 @@ h3 {
 }
 
 .story-page .story-side-menu {
-  width: min(980px, 92vw) !important;
-  max-width: 980px !important;
-  background: rgba(255, 254, 251, 0.62) !important;
-  backdrop-filter: blur(26px) saturate(1.12);
-  -webkit-backdrop-filter: blur(26px) saturate(1.12);
+  width: clamp(760px, 52vw, 980px) !important;
+  max-width: 96vw !important;
+  background: rgba(255, 254, 251, 0.52) !important;
+  backdrop-filter: blur(28px) saturate(1.18);
+  -webkit-backdrop-filter: blur(28px) saturate(1.18);
   overflow: hidden !important;
   isolation: isolate;
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateX(-104%) scale(0.985);
+  transition:
+    transform 660ms cubic-bezier(0.18, 0.82, 0.2, 1),
+    opacity 420ms ease,
+    filter 560ms ease !important;
+  will-change: transform, opacity, filter;
+}
+
+body.story-page.menu-open .story-side-menu {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateX(0) scale(1);
 }
 
 .story-page .story-side-menu::before {
@@ -3929,11 +3944,12 @@ h3 {
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.18;
+  opacity: 0.2;
   pointer-events: none;
   background-image: radial-gradient(rgba(32, 28, 24, 0.38) 0.7px, transparent 0.7px);
   background-size: 3px 3px;
   mix-blend-mode: multiply;
+  animation: menuGrainDrift 5.8s steps(6, end) infinite;
 }
 
 .side-menu__layout,
@@ -3951,9 +3967,9 @@ h3 {
 .side-menu__nav-panel {
   min-height: 100vh !important;
   padding: clamp(58px, 7vh, 92px) clamp(42px, 5vw, 84px) !important;
-  background: rgba(255, 254, 251, 0.38) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(255, 254, 251, 0.76) !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .story-menu-close {
@@ -3974,7 +3990,10 @@ h3 {
   justify-content: flex-start !important;
   gap: clamp(16px, 2.4vh, 28px) !important;
   padding: clamp(54px, 7vh, 92px) clamp(28px, 4vw, 58px) clamp(40px, 6vh, 72px) !important;
-  background: rgba(255, 254, 251, 0.32) !important;
+  background: rgba(24, 22, 19, 0.12) !important;
+  box-shadow: inset 1px 0 rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
 }
 
 .side-menu__brand,
@@ -4003,6 +4022,276 @@ h3 {
 .instagram-stack img {
   height: 100% !important;
   aspect-ratio: auto !important;
+}
+
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 86;
+  background: rgba(14, 13, 11, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms ease;
+}
+
+body.login-open .login-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.login-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 96;
+  width: clamp(760px, 50vw, 980px);
+  max-width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(32px, 5vw, 84px);
+  color: #fffdf8;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(194, 177, 128, 0.24), transparent 28%),
+    rgba(18, 17, 14, 0.42);
+  box-shadow: -34px 0 84px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(26px) saturate(1.16);
+  -webkit-backdrop-filter: blur(26px) saturate(1.16);
+  overflow: hidden;
+  isolation: isolate;
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateX(104%) scale(0.985);
+  transition:
+    transform 660ms cubic-bezier(0.18, 0.82, 0.2, 1),
+    opacity 420ms ease,
+    filter 560ms ease;
+  will-change: transform, opacity, filter;
+}
+
+body.login-open .login-drawer {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateX(0) scale(1);
+}
+
+.login-drawer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.66) 0.65px, transparent 0.7px),
+    radial-gradient(rgba(23, 20, 18, 0.42) 0.75px, transparent 0.8px);
+  background-size: 3px 3px, 5px 5px;
+  mix-blend-mode: overlay;
+  animation: menuGrainDrift 5.8s steps(6, end) infinite;
+}
+
+.login-drawer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(16, 15, 13, 0.68), rgba(16, 15, 13, 0.24) 48%, rgba(16, 15, 13, 0.38)),
+    linear-gradient(0deg, rgba(16, 15, 13, 0.54), transparent 46%);
+}
+
+.login-drawer__visual,
+.login-drawer__slide {
+  position: absolute;
+  inset: 0;
+}
+
+.login-drawer__visual {
+  z-index: 0;
+}
+
+.login-drawer__slide {
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.04);
+  animation: loginDrawerPhoto 18s ease-in-out infinite;
+}
+
+.login-drawer__slide--one {
+  background-image: url("../assets/main-slideshow/main-slide-04.jpg");
+  animation-delay: 0s;
+}
+
+.login-drawer__slide--two {
+  background-image: url("../assets/welcome/welcome-03.jpg");
+  animation-delay: 6s;
+}
+
+.login-drawer__slide--three {
+  background-image: url("../assets/main-slideshow/main-slide-07.jpg");
+  animation-delay: 12s;
+}
+
+.login-drawer__close {
+  position: absolute;
+  top: clamp(20px, 2.2vw, 34px);
+  right: clamp(20px, 2.2vw, 34px);
+  z-index: 3;
+  color: #fffdf8;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.login-drawer__panel {
+  position: relative;
+  z-index: 2;
+  width: min(430px, 100%);
+  padding: clamp(24px, 2.4vw, 34px);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 22px 7px 22px 7px;
+  background:
+    linear-gradient(145deg, rgba(7, 7, 6, 0.76), rgba(8, 7, 6, 0.46)),
+    rgba(8, 7, 6, 0.62);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 30px 84px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(24px) saturate(1.18);
+  -webkit-backdrop-filter: blur(24px) saturate(1.18);
+}
+
+.login-drawer__brand span {
+  display: block;
+  color: rgba(229, 214, 177, 0.94);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.24em;
+}
+
+.login-drawer__brand h2 {
+  margin: 8px 0 8px;
+  color: #fffdf8;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(34px, 2.6vw, 48px);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.login-drawer__brand p,
+.login-drawer__note {
+  margin: 0;
+  color: rgba(255, 253, 248, 0.66);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.login-drawer__switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 22px 0 20px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.login-drawer__switch button {
+  min-height: 36px;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 253, 248, 0.68);
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.login-drawer__switch button.is-active {
+  color: #171511;
+  background: rgba(255, 253, 248, 0.92);
+}
+
+.login-drawer__form {
+  display: grid;
+  gap: 14px;
+}
+
+.login-drawer__field {
+  display: grid;
+  gap: 7px;
+}
+
+.login-drawer__field--signup {
+  display: none;
+}
+
+.login-drawer[data-auth-mode="signup"] .login-drawer__field--signup {
+  display: grid;
+}
+
+.login-drawer__field span {
+  color: rgba(255, 253, 248, 0.72);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.login-drawer__field input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 7px;
+  padding: 13px 14px;
+  color: #fffdf8;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.login-drawer__field input::placeholder {
+  color: rgba(255, 253, 248, 0.44);
+}
+
+.login-drawer__field input:focus {
+  border-color: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.login-drawer__submit {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  color: #171511;
+  background: #fffdf8;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.login-drawer__note {
+  margin-top: 16px;
+}
+
+@keyframes menuGrainDrift {
+  0% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(-1.5%, 1%, 0); }
+  50% { transform: translate3d(1%, -1%, 0); }
+  75% { transform: translate3d(-0.8%, -1.4%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes loginDrawerPhoto {
+  0%, 28% { opacity: 1; transform: scale(1.04) translateX(0); }
+  34%, 94% { opacity: 0; transform: scale(1.08) translateX(1.4%); }
+  100% { opacity: 1; transform: scale(1.04) translateX(0); }
 }
 
 .story-featured--reference {
