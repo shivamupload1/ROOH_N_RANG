@@ -37,11 +37,6 @@ function ensureLoginDrawer() {
   document.body.insertAdjacentHTML("beforeend", `
     <div class="login-overlay" data-login-close aria-hidden="true"></div>
     <aside class="login-drawer" data-login-drawer data-auth-mode="login" role="dialog" aria-modal="true" aria-label="Rooh N Rang login">
-      <div class="login-drawer__visual" aria-hidden="true">
-        <span class="login-drawer__slide login-drawer__slide--one"></span>
-        <span class="login-drawer__slide login-drawer__slide--two"></span>
-        <span class="login-drawer__slide login-drawer__slide--three"></span>
-      </div>
       <button class="login-drawer__close icon-button" type="button" data-login-close aria-label="Close login">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
