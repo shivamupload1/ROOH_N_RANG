@@ -1,4 +1,4 @@
-﻿const http = require("http");
+const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
@@ -19,8 +19,23 @@ const mimeTypes = {
   ".svg": "image/svg+xml"
 };
 
+const rewrites = new Map([
+  ["/main", "main.html"],
+  ["/client-gallery", "client-gallery.html"],
+  ["/featured-stories", "featured-stories.html"],
+  ["/stories/bharat-mehak", "featured-story-bharat-mehak.html"],
+  ["/stories/meera-arjun", "featured-story-meera-arjun.html"]
+]);
+
+function rewritePath(urlPath) {
+  if (urlPath === "/admin" || urlPath.startsWith("/admin/")) return "admin.html";
+  return rewrites.get(urlPath) || null;
+}
+
 function safePath(urlPath) {
-  const cleanPath = decodeURIComponent(urlPath.split("?")[0]).replace(/^\/+/, "");
+  const cleanUrl = decodeURIComponent(urlPath.split("?")[0]);
+  const rewritten = rewritePath(cleanUrl);
+  const cleanPath = (rewritten || cleanUrl).replace(/^\/+/, "");
   const resolved = path.resolve(root, cleanPath || "index.html");
   return resolved.startsWith(root) ? resolved : path.join(root, "index.html");
 }
