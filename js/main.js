@@ -30,6 +30,7 @@ menuOpenButtons.forEach((button) => button.addEventListener("click", () => {
 }));
 menuCloseButtons.forEach((button) => button.addEventListener("click", () => document.body.classList.remove("menu-open")));
 
+const CLIENT_GALLERY_ACCESS_KEY = "roohClientGalleryAccess";
 let loginDrawerReady = false;
 
 function ensureLoginDrawer() {
@@ -57,15 +58,16 @@ function ensureLoginDrawer() {
           </label>
           <label class="login-drawer__field">
             <span>Email</span>
-            <input type="email" placeholder="name@example.com" autocomplete="email">
+            <input type="email" placeholder="name@example.com" autocomplete="email" data-login-email required>
           </label>
           <label class="login-drawer__field">
             <span>Password</span>
-            <input type="password" placeholder="Gallery password" autocomplete="current-password">
+            <input type="password" placeholder="Gallery password" autocomplete="current-password" data-login-password required>
           </label>
           <button class="login-drawer__submit" type="submit" data-login-submit>Continue</button>
+          <p class="login-drawer__error" data-login-error hidden>Details match nahi ho rahe. Please email aur password check karein.</p>
         </form>
-        <p class="login-drawer__note">Placeholder only. Final login will connect with Supabase Auth and protected gallery links.</p>
+        <p class="login-drawer__note">Preview login only. Final protected galleries will move to Supabase.</p>
       </section>
     </aside>
   `);
@@ -88,11 +90,31 @@ function ensureLoginDrawer() {
       });
       if (title) title.textContent = mode === "signup" ? "Signup" : "Login";
       if (submit) submit.textContent = mode === "signup" ? "Create Account" : "Continue";
+      const error = document.querySelector("[data-login-error]");
+      if (error) error.hidden = true;
     });
   });
 
   document.querySelector("[data-login-form]")?.addEventListener("submit", (event) => {
     event.preventDefault();
+    const form = event.currentTarget;
+    const email = form.querySelector("[data-login-email]")?.value.trim() || "";
+    const password = form.querySelector("[data-login-password]")?.value || "";
+    const error = form.querySelector("[data-login-error]");
+
+    if (error) error.hidden = true;
+    form.classList.remove("has-error");
+
+    if (!email || !password) {
+      if (error) {
+        error.textContent = "Preview ke liye email aur password dono fill karein.";
+        error.hidden = false;
+      }
+      form.classList.add("has-error");
+      return;
+    }
+
+    window.sessionStorage.setItem(CLIENT_GALLERY_ACCESS_KEY, "true");
     window.location.href = "client-gallery.html";
   });
 
@@ -129,6 +151,10 @@ if (window.location.hash === "#menu") {
     document.body.classList.remove("login-open");
     document.body.classList.add("menu-open");
   }, 80);
+}
+
+if (document.body.classList.contains("gallery-body") && window.sessionStorage.getItem(CLIENT_GALLERY_ACCESS_KEY) !== "true") {
+  window.location.replace("main.html#login");
 }
 
 const featureImages = [
@@ -183,13 +209,13 @@ const lightbox = document.getElementById("lightbox");
 const lightboxImage = document.getElementById("lightbox-image");
 const lightboxClose = document.getElementById("lightbox-close");
 
-document.querySelectorAll("[data-lightbox]").forEach((tile) => {
-  tile.addEventListener("click", () => {
-    if (!lightbox || !lightboxImage) return;
-    lightboxImage.src = tile.getAttribute("data-lightbox") || "";
-    lightbox.hidden = false;
-    document.body.classList.add("lightbox-open");
-  });
+document.addEventListener("click", (event) => {
+  if (!(event.target instanceof Element)) return;
+  const tile = event.target.closest("[data-lightbox]");
+  if (!tile || !lightbox || !lightboxImage) return;
+  lightboxImage.src = tile.getAttribute("data-lightbox") || "";
+  lightbox.hidden = false;
+  document.body.classList.add("lightbox-open");
 });
 
 function closeLightbox() {
@@ -282,21 +308,143 @@ if (cinemaVideo && cinemaProgress) {
     cinemaProgress.style.width = `${percent}%`;
   });
 }
-// Captured Moments smooth same-ratio dissolve animation
+// Captured Moments rolling grid and same-ratio dissolve animation
+const CAPTURED_TILE_LIMIT = 100;
+const capturedSection = document.querySelector(".story-captured");
+const capturedFrame = document.querySelector(".story-mosaic-frame");
 const capturedMosaic = document.querySelector(".story-mosaic--final");
-const capturedCycleTiles = Array.from(document.querySelectorAll(".story-mosaic--final [data-cycle-images]"));
+const capturedDots = Array.from(document.querySelectorAll("[data-captured-jump]"));
+let capturedCycleTiles = Array.from(document.querySelectorAll(".story-mosaic--final [data-cycle-images]"));
 let capturedCyclePointer = 0;
 const capturedImageCache = new Map();
 let capturedLayoutTimer;
+let capturedTargetProgress = 0;
+let capturedCurrentProgress = 0;
+let capturedRollerTicking = false;
+let capturedDissolveTimer;
+
+function clampCaptured(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
 
 function getCapturedColumnCount() {
   const width = window.innerWidth;
-  if (width < 560) return 2;
-  if (width < 920) return 3;
-  if (width < 1600) return 8;
-  if (width < 2400) return 8;
-  if (width < 3200) return 10;
-  return 12;
+  if (width < 620) return 3;
+  if (width < 980) return 4;
+  if (width < 1380) return 5;
+  if (width < 2400) return 6;
+  if (width < 3400) return 7;
+  return 8;
+}
+
+function normalizeCapturedItem(item) {
+  return {
+    Kind: item.Kind === "portrait" ? "portrait" : "landscape",
+    File: item.File,
+    Width: Number(item.Width || (item.Kind === "portrait" ? 800 : 1200)),
+    Height: Number(item.Height || (item.Kind === "portrait" ? 1200 : 800))
+  };
+}
+
+function getCapturedFallbackItems() {
+  return Array.from(document.querySelectorAll(".story-mosaic--final [data-lightbox]")).map((tile) => {
+    const image = tile.querySelector("img");
+    const group = tile.getAttribute("data-cycle-group") || (tile.classList.contains("tall") ? "portrait" : "landscape");
+    return normalizeCapturedItem({
+      Kind: group,
+      File: tile.getAttribute("data-lightbox") || (image ? image.getAttribute("src") : ""),
+      Width: image ? image.getAttribute("width") : "",
+      Height: image ? image.getAttribute("height") : ""
+    });
+  }).filter((item) => item.File);
+}
+
+function selectCapturedItems(items) {
+  const landscapes = items.filter((item) => item.Kind !== "portrait");
+  const portraits = items.filter((item) => item.Kind === "portrait");
+  const selected = [];
+  const used = new Set();
+  let landscapeIndex = 0;
+  let portraitIndex = 0;
+  const total = Math.min(CAPTURED_TILE_LIMIT, items.length);
+
+  for (let index = 0; index < total; index += 1) {
+    const preferPortrait = portraits.length && index % 4 === 1;
+    const primary = preferPortrait ? portraits : landscapes.length ? landscapes : items;
+    const secondary = preferPortrait ? landscapes : portraits;
+    let pool = primary;
+    let pointer = preferPortrait ? portraitIndex : landscapeIndex;
+    let picked = null;
+
+    for (let tries = 0; tries < pool.length; tries += 1) {
+      const candidate = pool[(pointer + tries) % pool.length];
+      if (!used.has(candidate.File)) {
+        picked = candidate;
+        pointer += tries + 1;
+        break;
+      }
+    }
+
+    if (!picked && secondary.length) {
+      pool = secondary;
+      pointer = preferPortrait ? landscapeIndex : portraitIndex;
+      for (let tries = 0; tries < pool.length; tries += 1) {
+        const candidate = pool[(pointer + tries) % pool.length];
+        if (!used.has(candidate.File)) {
+          picked = candidate;
+          pointer += tries + 1;
+          break;
+        }
+      }
+    }
+
+    if (!picked) break;
+    if (picked.Kind === "portrait") portraitIndex = pointer;
+    else landscapeIndex = pointer;
+    used.add(picked.File);
+    selected.push(picked);
+  }
+
+  return selected;
+}
+
+function makeCapturedTile(item, index, items) {
+  const tile = document.createElement("button");
+  const kind = item.Kind === "portrait" ? "portrait" : "landscape";
+  const kindItems = items.filter((candidate) => candidate.Kind === kind);
+  const kindIndex = kindItems.findIndex((candidate) => candidate.File === item.File);
+  const cycleImages = [item.File];
+
+  for (let offset = 1; offset <= 3 && kindItems.length > 1; offset += 1) {
+    const next = kindItems[(kindIndex + offset) % kindItems.length];
+    if (next && next.File !== item.File) cycleImages.push(next.File);
+  }
+
+  tile.className = kind === "portrait" ? "story-tile tall" : "story-tile";
+  tile.type = "button";
+  tile.setAttribute("data-cycle-group", kind);
+  tile.setAttribute("data-cycle-images", cycleImages.join("|"));
+  tile.setAttribute("data-lightbox", item.File);
+  tile.setAttribute("aria-label", `Open captured moment ${index + 1}`);
+
+  const image = document.createElement("img");
+  image.src = item.File;
+  image.width = item.Width;
+  image.height = item.Height;
+  image.loading = index < 22 ? "eager" : "lazy";
+  image.decoding = "async";
+  image.alt = `Captured moment ${String(index + 1).padStart(2, "0")}`;
+  if (index < 16) image.fetchPriority = "high";
+  tile.appendChild(image);
+  return tile;
+}
+
+function estimatedCapturedUnits(tile) {
+  const image = tile.querySelector("img");
+  const width = image ? Number(image.getAttribute("width")) : 0;
+  const height = image ? Number(image.getAttribute("height")) : 0;
+  if (width && height) return height / width;
+  return (tile.getAttribute("data-cycle-group") || "landscape") === "portrait" ? 1.5 : 0.667;
 }
 
 function layoutCapturedMasonry() {
@@ -313,13 +461,65 @@ function layoutCapturedMasonry() {
   });
   capturedMosaic.textContent = "";
   capturedCycleTiles.forEach((tile) => {
-    const group = tile.getAttribute("data-cycle-group") || "landscape";
-    const units = group === "portrait" ? 1.5 : 0.667;
+    const units = estimatedCapturedUnits(tile);
     const target = columns.reduce((shortest, column) => (column.units < shortest.units ? column : shortest), columns[0]);
     target.element.appendChild(tile);
     target.units += units;
   });
   columns.forEach((column) => capturedMosaic.appendChild(column.element));
+  updateCapturedTarget();
+}
+
+function updateCapturedTarget() {
+  if (!capturedSection || !capturedFrame || !capturedMosaic) return;
+  const rect = capturedSection.getBoundingClientRect();
+  const scrollable = capturedSection.offsetHeight - window.innerHeight;
+  capturedTargetProgress = clampCaptured(-rect.top / Math.max(1, scrollable), 0, 1);
+  if (!capturedRollerTicking) {
+    capturedRollerTicking = true;
+    window.requestAnimationFrame(renderCapturedRoller);
+  }
+}
+
+function renderCapturedRoller() {
+  if (!capturedFrame || !capturedMosaic) {
+    capturedRollerTicking = false;
+    return;
+  }
+
+  if (capturedTargetProgress <= 0.002 || capturedTargetProgress >= 0.998) {
+    capturedCurrentProgress = capturedTargetProgress;
+  } else {
+    capturedCurrentProgress += (capturedTargetProgress - capturedCurrentProgress) * 0.085;
+  }
+
+  if (Math.abs(capturedTargetProgress - capturedCurrentProgress) < 0.0008) {
+    capturedCurrentProgress = capturedTargetProgress;
+  }
+
+  const raw = capturedCurrentProgress;
+  const eased = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
+  const columns = capturedMosaic.querySelectorAll(".story-mosaic-column");
+  const frameRect = capturedFrame.getBoundingClientRect();
+  const mosaicRect = capturedMosaic.getBoundingClientRect();
+  const mosaicTop = mosaicRect.top - frameRect.top;
+  const safetyPad = Math.max(window.innerHeight * 0.82, 980);
+
+  columns.forEach((column) => {
+    const end = Math.min(0, capturedFrame.clientHeight + safetyPad - mosaicTop - column.scrollHeight);
+    column.style.transform = `translate3d(0, ${end * eased}px, 0)`;
+  });
+
+  capturedDots.forEach((dot, index) => {
+    const active = index === Math.min(capturedDots.length - 1, Math.floor(raw * capturedDots.length));
+    dot.classList.toggle("is-active", active);
+  });
+
+  if (Math.abs(capturedTargetProgress - capturedCurrentProgress) > 0.0008) {
+    window.requestAnimationFrame(renderCapturedRoller);
+  } else {
+    capturedRollerTicking = false;
+  }
 }
 
 function preloadCapturedImage(src) {
@@ -356,18 +556,62 @@ function cycleCapturedTile() {
   }).catch(() => {});
 }
 
-if (capturedCycleTiles.length) {
+async function hydrateCapturedGallery() {
+  if (!capturedMosaic) return;
+  const fallbackItems = getCapturedFallbackItems();
+  try {
+    const response = await fetch("assets/grid-gallery/manifest.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("Captured Moments manifest unavailable");
+    const manifest = await response.json();
+    const normalized = Array.isArray(manifest) ? manifest.map(normalizeCapturedItem).filter((item) => item.File) : [];
+    const selected = selectCapturedItems(normalized);
+    if (!selected.length) throw new Error("Captured Moments manifest is empty");
+    capturedMosaic.textContent = "";
+    selected.forEach((item, index) => capturedMosaic.appendChild(makeCapturedTile(item, index, selected)));
+    capturedCycleTiles = Array.from(capturedMosaic.querySelectorAll("[data-cycle-images]"));
+    capturedMosaic.dataset.columns = "";
+  } catch (error) {
+    if (fallbackItems.length && !capturedCycleTiles.length) {
+      capturedCycleTiles = Array.from(capturedMosaic.querySelectorAll("[data-cycle-images]"));
+    }
+  }
+}
+
+async function initCapturedGallery() {
+  if (!capturedMosaic) return;
+  await hydrateCapturedGallery();
   layoutCapturedMasonry();
+  updateCapturedTarget();
   window.addEventListener("resize", () => {
     window.clearTimeout(capturedLayoutTimer);
-    capturedLayoutTimer = window.setTimeout(layoutCapturedMasonry, 160);
+    capturedLayoutTimer = window.setTimeout(() => {
+      capturedMosaic.dataset.columns = "";
+      layoutCapturedMasonry();
+      updateCapturedTarget();
+    }, 160);
   }, { passive: true });
+  window.addEventListener("scroll", updateCapturedTarget, { passive: true });
+  capturedDots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      if (!capturedSection) return;
+      const jump = Number(dot.getAttribute("data-captured-jump") || 0);
+      const travel = Math.max(1, capturedSection.offsetHeight - window.innerHeight);
+      window.scrollTo({
+        top: capturedSection.offsetTop + travel * clampCaptured(jump, 0, 1),
+        behavior: "smooth"
+      });
+    });
+  });
   capturedCycleTiles.forEach((tile) => {
     const images = (tile.getAttribute("data-cycle-images") || "").split("|").filter(Boolean);
     images.slice(1).forEach((src) => preloadCapturedImage(src));
   });
-  window.setInterval(cycleCapturedTile, 2300);
+  capturedDissolveTimer = window.setInterval(cycleCapturedTile, 3200);
   window.setTimeout(cycleCapturedTile, 1200);
+}
+
+if (capturedCycleTiles.length || capturedMosaic) {
+  initCapturedGallery();
 }
 // Spotlight Films cinematic player. Add real YouTube embed URLs to data-youtube-src.
 const spotlightRoot = document.querySelector("[data-spotlight]");
