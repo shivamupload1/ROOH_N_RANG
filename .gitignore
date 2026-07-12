@@ -1,41 +1,42 @@
 # dependencies
-node_modules
+node_modules/
 .pnp
 .pnp.*
 
-# next
-.next
-out
+# Next.js and static builds
+.next/
+out/
+build/
+dist/
 
-# production
-build
-dist
-
-# env
+# environment and credentials
 .env
-.env*.local
+.env.*
+!.env.example
+service-account.json
+*.pem
 
-# prisma
+# Prisma local database
 prisma/dev.db
 
-# logs
+# logs and generated artifacts
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-*.log
+outputs/
+screenshots/
+Website Data/
 
-# generated artifacts
-outputs
-
-# local Codex validation tooling
-.codex-npm
+# local package/tool caches
+.codex-npm/
 .codex-npm.tgz
-.codex-pnpm
+.codex-pnpm/
 .codex-pnpm.tgz
-.npm-cache
-.pnpm-store
+.npm-cache/
+.pnpm-store/
 
-# misc
+# OS files
 .DS_Store
-*.pem
+Thumbs.db
