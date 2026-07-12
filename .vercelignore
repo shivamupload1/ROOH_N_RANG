@@ -1,0 +1,23 @@
+# Secrets and local tool state
+.env
+.env.*
+.npm-cache/
+.pnpm-store/
+node_modules/
+**/node_modules/
+**/.next/
+**/.vercel/
+*.log
+
+# Archived single-app frontend and local previews. Production apps live in apps/*.
+/app/
+/assets/
+/components/
+/css/
+/js/
+/lib/
+/outputs/
+/public/
+/*.html
+/server.js
+

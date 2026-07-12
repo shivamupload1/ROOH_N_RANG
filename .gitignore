@@ -36,6 +36,7 @@ Website Data/
 .codex-pnpm.tgz
 .npm-cache/
 .pnpm-store/
+.vercel-stage/
 
 # OS files
 .DS_Store

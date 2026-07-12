@@ -51,18 +51,18 @@ function ensureLoginDrawer() {
           <button type="button" class="is-active" data-login-mode="login" aria-pressed="true">Login</button>
           <button type="button" data-login-mode="signup" aria-pressed="false">Signup</button>
         </div>
-        <form class="login-drawer__form" data-login-form>
+        <form class="login-drawer__form" data-login-form action="/api/login" method="post">
           <label class="login-drawer__field login-drawer__field--signup">
             <span>Name</span>
             <input type="text" placeholder="Your name" autocomplete="name">
           </label>
           <label class="login-drawer__field">
             <span>Email</span>
-            <input type="email" placeholder="name@example.com" autocomplete="email" data-login-email required>
+            <input type="email" name="email" placeholder="name@example.com" autocomplete="email" data-login-email required>
           </label>
           <label class="login-drawer__field">
             <span>Password</span>
-            <input type="password" placeholder="Gallery password" autocomplete="current-password" data-login-password required>
+            <input type="password" name="password" placeholder="Gallery password" autocomplete="current-password" data-login-password required>
           </label>
           <button class="login-drawer__submit" type="submit" data-login-submit>Continue</button>
           <p class="login-drawer__error" data-login-error hidden>Details match nahi ho rahe. Please email aur password check karein.</p>
@@ -96,7 +96,6 @@ function ensureLoginDrawer() {
   });
 
   document.querySelector("[data-login-form]")?.addEventListener("submit", (event) => {
-    event.preventDefault();
     const form = event.currentTarget;
     const email = form.querySelector("[data-login-email]")?.value.trim() || "";
     const password = form.querySelector("[data-login-password]")?.value || "";
@@ -106,6 +105,7 @@ function ensureLoginDrawer() {
     form.classList.remove("has-error");
 
     if (!email || !password) {
+      event.preventDefault();
       if (error) {
         error.textContent = "Preview ke liye email aur password dono fill karein.";
         error.hidden = false;
@@ -114,7 +114,6 @@ function ensureLoginDrawer() {
       return;
     }
 
-    window.location.href = "/client-login";
   });
 
   loginDrawerReady = true;

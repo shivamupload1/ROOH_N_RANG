@@ -47,6 +47,7 @@ export default async function ClientLoginPage({ searchParams }: { searchParams: 
             </button>
           </form>
           {error === "gallery" ? <p className="mt-3 text-sm font-medium text-rust">Enter a valid gallery code or link.</p> : null}
+          {error === "credentials" ? <p className="mt-3 text-sm font-medium text-rust">Email or password did not match an active client gallery.</p> : null}
           <Link
             href={brand.whatsappHref}
             className="mt-6 inline-flex items-center gap-2 rounded-md bg-ink px-5 py-3 text-sm font-semibold text-ivory"
