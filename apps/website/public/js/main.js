@@ -140,8 +140,32 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-if (window.location.hash === "#login") {
-  window.setTimeout(openLoginDrawer, 80);
+const loginErrorCode = new URLSearchParams(window.location.search).get("login");
+
+if (window.location.hash === "#login" || loginErrorCode) {
+  window.setTimeout(() => {
+    openLoginDrawer();
+
+    if (!loginErrorCode) return;
+
+    const error = document.querySelector("[data-login-error]");
+    const form = document.querySelector("[data-login-form]");
+    const messages = {
+      credentials: "Email ya password sahi nahi hai. Please dobara check karein.",
+      access: "Is account ko Admin access nahi mila hua hai.",
+      required: "Login continue karne ke liye email aur password fill karein."
+    };
+
+    if (error) {
+      error.textContent = messages[loginErrorCode] || messages.credentials;
+      error.hidden = false;
+    }
+    form?.classList.add("has-error");
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete("login");
+    window.history.replaceState({}, "", `${cleanUrl.pathname}${cleanUrl.search}#login`);
+  }, 80);
 }
 
 if (window.location.hash === "#menu") {
