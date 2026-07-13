@@ -45,7 +45,7 @@ function ensureLoginDrawer() {
         <div class="login-drawer__brand">
           <span>ROOH N RANG</span>
           <h2 data-login-title>Login</h2>
-          <p>Private gallery access, studio updates and future Supabase Auth will live here.</p>
+          <p>Secure access for private galleries and the Rooh N Rang editorial studio.</p>
         </div>
         <div class="login-drawer__switch" aria-label="Authentication mode">
           <button type="button" class="is-active" data-login-mode="login" aria-pressed="true">Login</button>
@@ -62,12 +62,12 @@ function ensureLoginDrawer() {
           </label>
           <label class="login-drawer__field">
             <span>Password</span>
-            <input type="password" name="password" placeholder="Gallery password" autocomplete="current-password" data-login-password required>
+            <input type="password" name="password" placeholder="Password" autocomplete="current-password" data-login-password required>
           </label>
           <button class="login-drawer__submit" type="submit" data-login-submit>Continue</button>
           <p class="login-drawer__error" data-login-error hidden>Details match nahi ho rahe. Please email aur password check karein.</p>
         </form>
-        <p class="login-drawer__note">Preview login only. Final protected galleries will move to Supabase.</p>
+        <p class="login-drawer__note">Protected access powered by Supabase.</p>
       </section>
     </aside>
   `);
