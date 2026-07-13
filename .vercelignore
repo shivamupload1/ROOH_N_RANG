@@ -15,9 +15,7 @@ node_modules/
 /components/
 /css/
 /js/
-/lib/
 /outputs/
 /public/
 /*.html
 /server.js
-
