@@ -1,13 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Download, Heart, Play, X } from "lucide-react";
+import { CheckSquare2, ChevronLeft, ChevronRight, Download, Heart, Play, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
 import { toggleFavoriteAction } from "@/app/gallery/[eventSlug]/actions";
 import { GalleryMediaCard, type GalleryMediaItem } from "@/components/gallery-media-card";
-
-const LOAD_BATCH_SIZE = 48;
 
 function columnsForWidth(width: number) {
   if (width >= 2000) return 6;
@@ -19,28 +17,27 @@ function columnsForWidth(width: number) {
 
 export function GalleryMasonryGrid({
   media,
+  navigationMedia,
   favoriteIds,
   eventSlug,
   basePath,
   eventDownloadsAllowed
 }: {
   media: GalleryMediaItem[];
+  navigationMedia: GalleryMediaItem[];
   favoriteIds: string[];
   eventSlug: string;
   basePath: string;
   eventDownloadsAllowed: boolean;
 }) {
   const gridRef = useRef<HTMLDivElement>(null);
-  const loadSentinelRef = useRef<HTMLDivElement>(null);
   const [columnCount, setColumnCount] = useState(2);
-  const [visibleCount, setVisibleCount] = useState(() => Math.min(LOAD_BATCH_SIZE, media.length));
   const [favoriteMediaIds, setFavoriteMediaIds] = useState(() => new Set(favoriteIds));
+  const [selectedMediaIds, setSelectedMediaIds] = useState(() => new Set<string>());
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
   const [isFavoritePending, startFavoriteTransition] = useTransition();
-  const visibleMedia = media.slice(0, visibleCount);
-  const isComplete = visibleCount >= media.length;
-  const activeMedia = activeIndex == null ? null : media[activeIndex] || null;
+  const activeMedia = activeIndex == null ? null : navigationMedia[activeIndex] || null;
   const activeImageSrc = activeMedia && (activeMedia.mediaType === "PHOTO" || activeMedia.thumbnailUrl)
     ? `/api/media/${activeMedia.id}`
     : null;
@@ -57,28 +54,13 @@ export function GalleryMasonryGrid({
     return () => resizeObserver.disconnect();
   }, []);
 
-  useEffect(() => {
-    const sentinel = loadSentinelRef.current;
-    if (!sentinel || isComplete) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0]?.isIntersecting) return;
-        setVisibleCount((count) => Math.min(count + LOAD_BATCH_SIZE, media.length));
-      },
-      { rootMargin: "900px 0px" }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [isComplete, media.length, visibleCount]);
-
   const movePreview = useCallback((offset: -1 | 1) => {
     setSlideDirection(offset > 0 ? "right" : "left");
     setActiveIndex((index) => {
-      if (index == null || media.length === 0) return index;
-      return (index + offset + media.length) % media.length;
+      if (index == null || navigationMedia.length === 0) return index;
+      return (index + offset + navigationMedia.length) % navigationMedia.length;
     });
-  }, [media.length]);
+  }, [navigationMedia.length]);
 
   useEffect(() => {
     if (activeIndex == null) return;
@@ -99,7 +81,7 @@ export function GalleryMasonryGrid({
   }, [activeIndex, movePreview]);
 
   function openPreview(mediaId: string) {
-    const nextIndex = media.findIndex((item) => item.id === mediaId);
+    const nextIndex = navigationMedia.findIndex((item) => item.id === mediaId);
     if (nextIndex < 0) return;
     setSlideDirection("right");
     setActiveIndex(nextIndex);
@@ -128,22 +110,96 @@ export function GalleryMasonryGrid({
     });
   }
 
+  function toggleSelection(mediaId: string) {
+    setSelectedMediaIds((current) => {
+      const next = new Set(current);
+      if (next.has(mediaId)) next.delete(mediaId);
+      else next.add(mediaId);
+      return next;
+    });
+  }
+
+  function favoriteSelected() {
+    const mediaIds = [...selectedMediaIds].filter((mediaId) => !favoriteMediaIds.has(mediaId));
+    if (mediaIds.length === 0) return;
+
+    setFavoriteMediaIds((current) => new Set([...current, ...mediaIds]));
+    startFavoriteTransition(async () => {
+      const results = await Promise.allSettled(
+        mediaIds.map((mediaId) => toggleFavoriteAction(eventSlug, basePath, mediaId))
+      );
+      const failedMediaIds = new Set(
+        results.flatMap((result, index) => result.status === "rejected" ? [mediaIds[index]] : [])
+      );
+
+      if (failedMediaIds.size > 0) {
+        setFavoriteMediaIds((current) => {
+          const next = new Set(current);
+          failedMediaIds.forEach((mediaId) => next.delete(mediaId));
+          return next;
+        });
+      }
+    });
+  }
+
+  function toggleCurrentPageSelection() {
+    const allCurrentSelected = media.length > 0 && media.every((item) => selectedMediaIds.has(item.id));
+    setSelectedMediaIds((current) => {
+      const next = new Set(current);
+      media.forEach((item) => {
+        if (allCurrentSelected) next.delete(item.id);
+        else next.add(item.id);
+      });
+      return next;
+    });
+  }
+
+  function downloadSelected() {
+    const downloadableMedia = navigationMedia.filter(
+      (item) => selectedMediaIds.has(item.id) && eventDownloadsAllowed && item.downloadAllowed
+    );
+
+    downloadableMedia.forEach((item, index) => {
+      window.setTimeout(() => {
+        const link = document.createElement("a");
+        link.href = `/download/${item.id}`;
+        link.download = item.fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }, index * 120);
+    });
+  }
+
   const columns = useMemo(() => {
     const nextColumns = Array.from({ length: columnCount }, () => [] as GalleryMediaItem[]);
     const estimatedHeights = Array.from({ length: columnCount }, () => 0);
-
-    visibleMedia.forEach((item, index) => {
-      const targetColumn = index < columnCount
-        ? index
-        : estimatedHeights.indexOf(Math.min(...estimatedHeights));
+    const mediaOrder = new Map(media.map((item, index) => [item.id, index]));
+    const normalizedHeight = (item: GalleryMediaItem) => {
       const width = item.width && item.width > 0 ? item.width : 4;
       const height = item.height && item.height > 0 ? item.height : 3;
+      return height / width;
+    };
 
-      nextColumns[targetColumn].push(item);
-      estimatedHeights[targetColumn] += height / width;
+    media.slice(0, columnCount).forEach((item, index) => {
+      nextColumns[index].push(item);
+      estimatedHeights[index] += normalizedHeight(item);
     });
+
+    [...media.slice(columnCount)]
+      .sort((a, b) => normalizedHeight(b) - normalizedHeight(a))
+      .forEach((item) => {
+        const targetColumn = estimatedHeights.indexOf(Math.min(...estimatedHeights));
+        nextColumns[targetColumn].push(item);
+        estimatedHeights[targetColumn] += normalizedHeight(item);
+      });
+
+    nextColumns.forEach((column) => {
+      column.sort((a, b) => (mediaOrder.get(a.id) || 0) - (mediaOrder.get(b.id) || 0));
+    });
+
     return nextColumns;
-  }, [columnCount, visibleMedia]);
+  }, [columnCount, media]);
 
   const lightbox = activeMedia
     ? createPortal(
@@ -242,15 +298,57 @@ export function GalleryMasonryGrid({
                 media={mediaFile}
                 eventDownloadsAllowed={eventDownloadsAllowed}
                 isFavorite={favoriteMediaIds.has(mediaFile.id)}
+                isSelected={selectedMediaIds.has(mediaFile.id)}
                 isFavoritePending={isFavoritePending}
                 onPreview={openPreview}
                 onToggleFavorite={toggleFavorite}
+                onToggleSelection={toggleSelection}
               />
             ))}
           </div>
         ))}
       </div>
-      {!isComplete ? <div ref={loadSentinelRef} className="h-px w-full" aria-hidden="true" /> : null}
+      {selectedMediaIds.size > 0 ? (
+        <div className="fixed bottom-5 left-1/2 z-[60] flex max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-2 overflow-x-auto rounded-full border border-white/30 bg-[#171414]/45 px-4 py-2.5 text-white shadow-[0_16px_55px_rgba(0,0,0,0.32)] backdrop-blur-[18px] sm:gap-4 sm:px-5">
+          <span className="whitespace-nowrap text-sm font-medium">{selectedMediaIds.size} Selected</span>
+          <button
+            type="button"
+            onClick={() => setSelectedMediaIds(new Set())}
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-white/25 px-3 text-xs text-white/80 transition hover:bg-white hover:text-ink"
+          >
+            <X size={14} />
+            Clear
+          </button>
+          <span className="h-6 w-px shrink-0 bg-white/25" />
+          <button
+            type="button"
+            onClick={toggleCurrentPageSelection}
+            className="inline-flex h-9 shrink-0 items-center gap-2 px-2 text-sm text-white/85 transition hover:text-white"
+          >
+            Current page
+            <CheckSquare2 size={17} />
+          </button>
+          <button
+            type="button"
+            onClick={downloadSelected}
+            disabled={!navigationMedia.some((item) => selectedMediaIds.has(item.id) && eventDownloadsAllowed && item.downloadAllowed)}
+            className="inline-flex h-9 shrink-0 items-center gap-2 px-2 text-sm text-white/85 transition hover:text-white disabled:opacity-35"
+          >
+            Download
+            <Download size={17} />
+          </button>
+          <button
+            type="button"
+            onClick={favoriteSelected}
+            disabled={isFavoritePending || [...selectedMediaIds].every((mediaId) => favoriteMediaIds.has(mediaId))}
+            className="inline-flex h-9 shrink-0 items-center gap-2 px-2 text-sm text-white/85 transition hover:text-[#e0444f] disabled:opacity-35"
+            title="Add selected photos to favorites"
+          >
+            Favorite
+            <Heart size={18} />
+          </button>
+        </div>
+      ) : null}
       {lightbox}
     </>
   );

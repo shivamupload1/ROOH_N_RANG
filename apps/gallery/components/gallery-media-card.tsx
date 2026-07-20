@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Download, Heart, Play } from "lucide-react";
+import { CheckSquare2, Download, Heart, Play, Square } from "lucide-react";
 
 export type GalleryMediaItem = {
   id: string;
@@ -17,22 +17,26 @@ export function GalleryMediaCard({
   media,
   eventDownloadsAllowed,
   isFavorite,
+  isSelected,
   isFavoritePending,
   onPreview,
-  onToggleFavorite
+  onToggleFavorite,
+  onToggleSelection
 }: {
   media: GalleryMediaItem;
   eventDownloadsAllowed: boolean;
   isFavorite: boolean;
+  isSelected: boolean;
   isFavoritePending: boolean;
   onPreview: (mediaId: string) => void;
   onToggleFavorite: (mediaId: string) => void;
+  onToggleSelection: (mediaId: string) => void;
 }) {
   const imageSrc = media.mediaType === "PHOTO" || media.thumbnailUrl ? `/api/media/${media.id}` : null;
   const canDownload = eventDownloadsAllowed && media.downloadAllowed;
 
   return (
-    <article className="group relative w-full overflow-hidden bg-[#ecebe7]">
+    <article className={`group relative w-full overflow-hidden bg-[#ecebe7] ${isSelected ? "ring-2 ring-inset ring-white" : ""}`}>
       <button type="button" onClick={() => imageSrc && onPreview(media.id)} className="block w-full overflow-hidden bg-ink/10 text-left" aria-label={`Preview ${media.fileName}`}>
         {imageSrc ? (
           <Image
@@ -52,19 +56,29 @@ export function GalleryMediaCard({
         <span className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 transition duration-500 group-hover:opacity-100" />
       </button>
 
-      <div className="absolute right-2 top-2 z-20 flex gap-1.5 opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
+      <button
+        type="button"
+        onClick={() => onToggleSelection(media.id)}
+        aria-pressed={isSelected}
+        className="absolute bottom-2 left-2 z-20 grid h-9 w-9 place-items-center text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)] transition hover:scale-110"
+        title={isSelected ? "Remove from selection" : "Select photo"}
+      >
+        {isSelected ? <CheckSquare2 size={20} /> : <Square size={20} />}
+      </button>
+
+      <div className="absolute bottom-2 right-2 z-20 flex gap-0.5 opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
         <button
           type="button"
           onClick={() => onToggleFavorite(media.id)}
           disabled={isFavoritePending}
           aria-pressed={isFavorite}
-          className="grid h-9 w-9 place-items-center rounded-full border border-white/[0.35] bg-black/[0.35] text-white backdrop-blur-md transition hover:bg-black/50"
+          className="grid h-9 w-9 place-items-center text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)] transition hover:scale-110"
           title={isFavorite ? "Remove favorite" : "Save favorite"}
         >
           <Heart className={isFavorite ? "text-[#e0444f]" : "text-white"} size={16} fill={isFavorite ? "currentColor" : "none"} />
         </button>
         {canDownload ? (
-          <a href={`/download/${media.id}`} download className="grid h-9 w-9 place-items-center rounded-full border border-white/[0.35] bg-black/[0.35] text-white backdrop-blur-md transition hover:bg-white hover:text-ink" title="Download">
+          <a href={`/download/${media.id}`} download className="grid h-9 w-9 place-items-center text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.9)] transition hover:scale-110" title="Download">
             <Download size={16} />
           </a>
         ) : null}
