@@ -31,6 +31,32 @@ function textOrNull(value?: string | null) {
   return value && value.length > 0 ? value : null;
 }
 
+async function clientAccount(input: { email?: string | null; name: string; phone?: string | null }) {
+  const email = String(input.email || "").trim().toLowerCase();
+  if (!email) return null;
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    return prisma.user.update({
+      where: { id: existing.id },
+      data: {
+        name: input.name || existing.name,
+        phone: textOrNull(input.phone) || existing.phone,
+        role: existing.role === "ADMIN" ? "ADMIN" : "CLIENT"
+      }
+    });
+  }
+
+  return prisma.user.create({
+    data: {
+      email,
+      name: input.name,
+      phone: textOrNull(input.phone),
+      role: "CLIENT"
+    }
+  });
+}
+
 function dateOrNull(value?: string | null) {
   return value ? new Date(`${value}T00:00:00.000Z`) : null;
 }
@@ -81,9 +107,11 @@ async function albumSlug(input: { eventId: string; name: string; slug?: string |
 export async function createClientAction(formData: FormData) {
   await requireAdminSession();
   const parsed = clientSchema.parse(Object.fromEntries(formData));
+  const user = await clientAccount(parsed);
 
   const client = await prisma.client.create({
     data: {
+      userId: user?.id || null,
       name: parsed.name,
       email: textOrNull(parsed.email),
       phone: textOrNull(parsed.phone),
@@ -99,10 +127,12 @@ export async function createClientAction(formData: FormData) {
 export async function updateClientAction(id: string, formData: FormData) {
   await requireAdminSession();
   const parsed = clientSchema.parse(Object.fromEntries(formData));
+  const user = await clientAccount(parsed);
 
   await prisma.client.update({
     where: { id },
     data: {
+      userId: user?.id || null,
       name: parsed.name,
       email: textOrNull(parsed.email),
       phone: textOrNull(parsed.phone),

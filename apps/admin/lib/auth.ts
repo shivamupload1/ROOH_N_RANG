@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { clearIdentitySession, getIdentitySession } from "@/lib/identity-session";
 import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
 
 const GALLERY_SESSION_COOKIE = "rr_gallery_session";
@@ -86,11 +87,28 @@ function readGalleryToken(token: string): GallerySession | null {
 }
 
 export async function clearAdminSession() {
+  await clearIdentitySession();
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
 }
 
 export async function getAdminSession() {
+  const identity = await getIdentitySession();
+  if (identity?.role === "ADMIN") {
+    const admin = await prisma.user.findFirst({
+      where: { id: identity.userId, role: "ADMIN" },
+      select: { id: true, email: true, name: true }
+    }).catch(() => null);
+
+    if (admin) {
+      return {
+        id: identity.authUserId,
+        email: admin.email,
+        name: admin.name
+      } satisfies AdminSession;
+    }
+  }
+
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getClaims();
   const claims = data?.claims;

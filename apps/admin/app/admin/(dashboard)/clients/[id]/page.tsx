@@ -173,7 +173,9 @@ export default async function EditClientPage({
           <form action={updateClientAction.bind(null, client.id)} className="grid gap-4 rounded-lg border border-ink/10 bg-white p-6">
             <div>
               <h2 className="text-lg font-semibold text-ink">Client details</h2>
-              <p className="mt-2 text-sm leading-6 text-ink/60">Basic record yahin save hota rahega. Update ke baad isi client page par wapas aoge.</p>
+              <p className="mt-2 text-sm leading-6 text-ink/60">
+                Basic record yahin save hota rahega. The saved email is linked to the Client login role automatically.
+              </p>
             </div>
             <FormField label="Client name" name="name" defaultValue={client.name} required />
             <div className="grid gap-4 sm:grid-cols-2">

@@ -51,10 +51,21 @@ function ensureLoginDrawer() {
           <button type="button" class="is-active" data-login-mode="login" aria-pressed="true">Login</button>
           <button type="button" data-login-mode="signup" aria-pressed="false">Signup</button>
         </div>
-        <form class="login-drawer__form" data-login-form action="/api/login" method="post">
+        <a class="login-drawer__google" href="/auth/google" data-auth-google>
+          <span aria-hidden="true">G</span>
+          <strong>Continue with Google</strong>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+        </a>
+        <div class="login-drawer__divider"><span>or use email</span></div>
+        <form class="login-drawer__form" data-login-form action="/auth/password" method="post">
+          <input type="hidden" name="next" value="" data-auth-next>
           <label class="login-drawer__field login-drawer__field--signup">
-            <span>Name</span>
-            <input type="text" placeholder="Your name" autocomplete="name">
+            <span>Full Name</span>
+            <input type="text" name="name" placeholder="Your full name" autocomplete="name" data-signup-required>
+          </label>
+          <label class="login-drawer__field login-drawer__field--signup">
+            <span>Phone</span>
+            <input type="tel" name="phone" placeholder="+91" autocomplete="tel" inputmode="tel" data-signup-required>
           </label>
           <label class="login-drawer__field">
             <span>Email</span>
@@ -65,12 +76,19 @@ function ensureLoginDrawer() {
             <input type="password" name="password" placeholder="Password" autocomplete="current-password" data-login-password required>
           </label>
           <button class="login-drawer__submit" type="submit" data-login-submit>Continue</button>
-          <p class="login-drawer__error" data-login-error hidden>Details match nahi ho rahe. Please email aur password check karein.</p>
+          <p class="login-drawer__error" data-login-error hidden>We could not sign you in. Please check your details.</p>
+          <p class="login-drawer__success" data-login-success hidden>Verification email sent. Open your inbox to activate the account.</p>
         </form>
-        <p class="login-drawer__note">Protected access powered by Supabase.</p>
+        <p class="login-drawer__note">One account for Admin, Client, and private gallery access.</p>
       </section>
     </aside>
   `);
+
+  const destination = new URLSearchParams(window.location.search).get("next") || "";
+  const nextInput = document.querySelector("[data-auth-next]");
+  const googleLink = document.querySelector("[data-auth-google]");
+  if (nextInput) nextInput.value = destination;
+  if (googleLink) googleLink.href = `/auth/google${destination ? `?next=${encodeURIComponent(destination)}` : ""}`;
 
   document.querySelectorAll("[data-login-close]").forEach((button) => {
     button.addEventListener("click", closeLoginDrawer);
@@ -82,6 +100,8 @@ function ensureLoginDrawer() {
       const drawer = document.querySelector("[data-login-drawer]");
       const title = document.querySelector("[data-login-title]");
       const submit = document.querySelector("[data-login-submit]");
+      const form = document.querySelector("[data-login-form]");
+      const passwordInput = document.querySelector("[data-login-password]");
       drawer?.setAttribute("data-auth-mode", mode);
       document.querySelectorAll("[data-login-mode]").forEach((item) => {
         const active = item.getAttribute("data-login-mode") === mode;
@@ -90,8 +110,15 @@ function ensureLoginDrawer() {
       });
       if (title) title.textContent = mode === "signup" ? "Signup" : "Login";
       if (submit) submit.textContent = mode === "signup" ? "Create Account" : "Continue";
+      if (form) form.action = mode === "signup" ? "/auth/signup" : "/auth/password";
+      if (passwordInput) passwordInput.autocomplete = mode === "signup" ? "new-password" : "current-password";
+      document.querySelectorAll("[data-signup-required]").forEach((input) => {
+        input.required = mode === "signup";
+      });
       const error = document.querySelector("[data-login-error]");
+      const success = document.querySelector("[data-login-success]");
       if (error) error.hidden = true;
+      if (success) success.hidden = true;
     });
   });
 
@@ -100,14 +127,19 @@ function ensureLoginDrawer() {
     const email = form.querySelector("[data-login-email]")?.value.trim() || "";
     const password = form.querySelector("[data-login-password]")?.value || "";
     const error = form.querySelector("[data-login-error]");
+    const mode = document.querySelector("[data-login-drawer]")?.getAttribute("data-auth-mode") || "login";
+    const name = form.querySelector("[name='name']")?.value.trim() || "";
+    const phone = form.querySelector("[name='phone']")?.value.trim() || "";
 
     if (error) error.hidden = true;
     form.classList.remove("has-error");
 
-    if (!email || !password) {
+    if (!email || !password || (mode === "signup" && (!name || !phone || password.length < 8))) {
       event.preventDefault();
       if (error) {
-        error.textContent = "Preview ke liye email aur password dono fill karein.";
+        error.textContent = mode === "signup"
+          ? "Enter your full name, phone, email, and a password of at least 8 characters."
+          : "Enter both your email and password.";
         error.hidden = false;
       }
       form.classList.add("has-error");
@@ -140,30 +172,44 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-const loginErrorCode = new URLSearchParams(window.location.search).get("login");
+const loginParams = new URLSearchParams(window.location.search);
+const loginErrorCode = loginParams.get("login");
+const authStatusCode = loginParams.get("auth");
 
-if (window.location.hash === "#login" || loginErrorCode) {
+if (window.location.hash === "#login" || loginErrorCode || authStatusCode) {
   window.setTimeout(() => {
     openLoginDrawer();
 
-    if (!loginErrorCode) return;
-
     const error = document.querySelector("[data-login-error]");
+    const success = document.querySelector("[data-login-success]");
     const form = document.querySelector("[data-login-form]");
     const messages = {
-      credentials: "Email ya password sahi nahi hai. Please dobara check karein.",
-      access: "Is account ko Admin access nahi mila hua hai.",
-      required: "Login continue karne ke liye email aur password fill karein."
+      credentials: "The email or password is incorrect. Please try again.",
+      access: "This account does not have permission for that area.",
+      required: "Enter both your email and password.",
+      "verify-required": "Verify your email before signing in.",
+      "signup-details": "Enter a valid full name, phone, email, and password.",
+      signup: "We could not create the account. Try signing in if you already registered.",
+      google: "Google sign-in could not be started. Please try again.",
+      callback: "The sign-in callback could not be completed. Please try again.",
+      session: "Your sign-in session expired. Please sign in again."
     };
 
-    if (error) {
+    if (loginErrorCode && error) {
       error.textContent = messages[loginErrorCode] || messages.credentials;
       error.hidden = false;
+      if (success) success.hidden = true;
+      form?.classList.add("has-error");
     }
-    form?.classList.add("has-error");
+
+    if (authStatusCode === "verify" && success) {
+      success.hidden = false;
+      if (error) error.hidden = true;
+    }
 
     const cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete("login");
+    cleanUrl.searchParams.delete("auth");
     window.history.replaceState({}, "", `${cleanUrl.pathname}${cleanUrl.search}#login`);
   }, 80);
 }

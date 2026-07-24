@@ -17,6 +17,9 @@ export default function NewClientPage() {
         <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">
           Client save hote hi direct client workspace khulega, jahan se Google account connect, folder create, gallery link, PIN aur sync sab ek hi jagah se hoga.
         </p>
+        <p className="mt-2 max-w-2xl text-xs leading-5 text-ink/55">
+          The email saved here becomes this client&apos;s login identity. When that person signs up with the same email, the account is linked automatically with the Client role.
+        </p>
       </div>
 
       <form action={createClientAction} className="mt-6 grid gap-4 rounded-lg border border-ink/10 bg-white p-6">

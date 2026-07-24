@@ -156,6 +156,12 @@ importers:
       '@rooh/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@supabase/ssr':
+        specifier: ^0.12.0
+        version: 0.12.0(@supabase/supabase-js@2.110.2)
+      '@supabase/supabase-js':
+        specifier: ^2.110.2
+        version: 2.110.2
       lucide-react:
         specifier: ^1.18.0
         version: 1.18.0(react@19.2.7)
